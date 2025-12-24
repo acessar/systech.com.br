@@ -4,31 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sys — IA Autônoma</title>
-  <script>
-    // Script super agressivo no HEAD - executa ANTES de tudo
-    window.addEventListener('DOMContentLoaded', () => {
-      const videos = document.querySelectorAll('video');
-      videos.forEach(v => {
-        v.muted = true;
-        v.volume = 0;
-        v.defaultMuted = true;
-        v.setAttribute('muted', 'muted');
-        v.setAttribute('playsinline', 'playsinline');
-        
-        // Força play repetidamente
-        const playNow = () => {
-          v.play().catch(() => {
-            setTimeout(playNow, 50);
-          });
-        };
-        
-        playNow();
-        setTimeout(playNow, 10);
-        setTimeout(playNow, 100);
-        setTimeout(playNow, 200);
-      });
-    });
-  </script>
   <style>
     * {
       margin: 0;
@@ -85,14 +60,12 @@
       color: #ffffff;
     }
     
-    /* Fundo */
+    /* Fundo com vídeo */
     .background {
       position: fixed;
       inset: 0;
       z-index: -2;
-      overflow: hidden;
       background: #000;
-      background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
     }
     
     .background-video,
@@ -103,43 +76,37 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      z-index: 0;
-      background: transparent;
     }
     
     .background-mobile {
       display: none;
     }
     
-    /* CAMADA FÍSICA QUE BLOQUEIA O BOTÃO - FICA POR CIMA DO VÍDEO */
-    .video-shield {
-      position: absolute;
-      inset: 0;
-      z-index: 10;
-      background: transparent;
-      pointer-events: all;
-      cursor: default;
-    }
-    
-    /* Esconde controles com CSS super agressivo */
-    video {
-      pointer-events: none !important;
-    }
-    
-    video::-webkit-media-controls,
-    video::-webkit-media-controls-enclosure,
+    /* SOLUÇÃO: Esconde TODOS os controles */
     video::-webkit-media-controls-panel,
     video::-webkit-media-controls-play-button,
     video::-webkit-media-controls-start-playback-button,
-    video::-webkit-media-controls-overlay-play-button,
-    video::-webkit-media-controls-overlay-enclosure {
+    video::-webkit-media-controls {
       display: none !important;
-      opacity: 0 !important;
-      visibility: hidden !important;
-      pointer-events: none !important;
       -webkit-appearance: none !important;
-      width: 0 !important;
-      height: 0 !important;
+    }
+    
+    video {
+      pointer-events: none;
+    }
+    
+    /* SOLUÇÃO: Camada que cobre o vídeo até tocar */
+    .video-blocker {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+      transition: opacity 0.3s ease;
+    }
+    
+    .video-blocker.hidden {
+      opacity: 0;
+      pointer-events: none;
     }
     
     .overlay {
@@ -162,6 +129,8 @@
       text-align: center;
       padding: 0 24px;
       color: #ffffff;
+      position: relative;
+      z-index: 1;
     }
     
     h1 {
@@ -234,11 +203,13 @@
       }
     }
 
-    /* ===== SEÇÃO SOBRE O PRODUTO ===== */
+    /* Resto do CSS das outras seções... */
     .about-product {
       background: #000;
       color: #fff;
       padding: 100px 24px;
+      position: relative;
+      z-index: 1;
     }
     
     .about-content {
@@ -350,7 +321,6 @@
       line-height: 1.3;
     }
 
-    /* Mobile - Sobre o Produto */
     @media (max-width: 768px) {
       .about-product {
         padding: 60px 20px;
@@ -372,11 +342,12 @@
       }
     }
 
-    /* ===== SEÇÃO FAQs ===== */
     .faqs-section {
       background: #000;
       color: #fff;
       padding: 100px 24px;
+      position: relative;
+      z-index: 1;
     }
     
     .faqs-container {
@@ -447,7 +418,6 @@
       padding-top: 8px;
     }
 
-    /* Mobile - FAQs */
     @media (max-width: 768px) {
       .faqs-section {
         padding: 60px 20px;
@@ -469,7 +439,6 @@
   </style>
 </head>
 <body>
-  <!-- Navegação -->
   <nav>
     <a href="index.html" class="logo">Sys</a>
     <ul class="nav-links">
@@ -478,43 +447,34 @@
     </ul>
   </nav>
 
-  <!-- Fundo -->
+  <!-- SOLUÇÃO: Camada que fica por cima até o vídeo tocar -->
+  <div class="video-blocker" id="blocker"></div>
+
   <div class="background">
     <video
+      id="desktop-video"
       class="background-video"
-      src="homesys.mp4"
-      autoplay
       muted
       loop
       playsinline
-      webkit-playsinline
-      preload="auto"
-      defaultmuted
-      onloadstart="this.muted=true;this.volume=0;this.play();"
-      onloadedmetadata="this.play();"
-      oncanplay="this.play();"
-    ></video>
+      preload="metadata"
+    >
+      <source src="homesys.mp4" type="video/mp4">
+    </video>
     <video
+      id="mobile-video"
       class="background-mobile"
-      src="homesyss.gif.mp4"
-      autoplay
       muted
       loop
       playsinline
-      webkit-playsinline
-      preload="auto"
-      defaultmuted
-      onloadstart="this.muted=true;this.volume=0;this.play();"
-      onloadedmetadata="this.play();"
-      oncanplay="this.play();"
-    ></video>
-    <!-- Camada física que BLOQUEIA o botão -->
-    <div class="video-shield"></div>
+      preload="metadata"
+    >
+      <source src="homesyss.gif.mp4" type="video/mp4">
+    </video>
   </div>
   
   <div class="overlay"></div>
   
-  <!-- Conteúdo -->
   <main class="container">
     <h1>Automatização de Agendamentos</h1>
     <p>
@@ -525,10 +485,8 @@
     <div class="watermark">Sys • Automação Inteligente</div>
   </main>
 
-  <!-- Seção Sobre o Produto -->
   <section class="about-product" id="sobre-produto">
     <div class="about-content">
-      <!-- Hero do Produto -->
       <div class="product-hero">
         <div class="product-text">
           <h2>IA para gerenciamento inteligente de agendamentos</h2>
@@ -545,7 +503,6 @@
         </div>
       </div>
 
-      <!-- Insights Section -->
       <div class="insights-section">
         <h3>Antecipe necessidades. Acelere resultados.</h3>
         <p>
@@ -554,7 +511,6 @@
           e impulsiona um crescimento lucrativo — sem achismos.
         </p>
 
-        <!-- Cards Grid -->
         <div class="cards-grid">
           <div class="card">
             <div class="card-bg" style="background-image: url('card1.jpg');"></div>
@@ -571,7 +527,6 @@
         </div>
       </div>
 
-      <!-- Part 3 - Dados em Resultados -->
       <div class="product-hero" style="margin-top: 100px; margin-bottom: 0;">
         <div class="product-text">
           <h3>Onde dados se tornam resultados</h3>
@@ -591,7 +546,6 @@
     </div>
   </section>
 
-  <!-- Seção FAQs -->
   <section class="faqs-section" id="faqs">
     <div class="faqs-container">
       <h2 class="faqs-title">FAQs</h2>
@@ -652,120 +606,41 @@
   </section>
 
   <script>
-    (function() {
-      const isMobile = window.innerWidth <= 768;
-      const desktop = document.querySelector('.background-video');
-      const mobile = document.querySelector('.background-mobile');
-      const active = isMobile ? mobile : desktop;
-      const inactive = isMobile ? desktop : mobile;
-      
-      // Esconde inativo
-      if (inactive) {
-        inactive.style.display = 'none';
-      }
-      
-      // Configura vídeo ativo
-      if (active) {
-        active.style.display = 'block';
-        active.muted = true;
-        active.volume = 0;
-        active.defaultMuted = true;
-        active.playsInline = true;
-        
-        // FORÇA PLAY - ESTRATÉGIA MULTI-CAMADAS
-        let playCount = 0;
-        
-        const forcePlay = () => {
-          if (playCount > 100) return;
-          playCount++;
-          
-          const promise = active.play();
-          if (promise !== undefined) {
-            promise.catch(() => {
-              // Continua tentando
-              setTimeout(forcePlay, 50);
-            });
-          }
-        };
-        
-        // Tenta play imediatamente em múltiplos momentos
-        forcePlay();
-        setTimeout(forcePlay, 1);
-        setTimeout(forcePlay, 10);
-        setTimeout(forcePlay, 50);
-        setTimeout(forcePlay, 100);
-        setTimeout(forcePlay, 200);
-        setTimeout(forcePlay, 300);
-        setTimeout(forcePlay, 500);
-        setTimeout(forcePlay, 1000);
-        
-        // Eventos de carregamento
-        active.addEventListener('loadedmetadata', forcePlay);
-        active.addEventListener('loadeddata', forcePlay);
-        active.addEventListener('canplay', forcePlay);
-        active.addEventListener('canplaythrough', forcePlay);
-        
-        // Loop infinito
-        active.addEventListener('ended', () => {
-          active.currentTime = 0;
-          active.play();
-        });
-        
-        // Anti-pause
-        active.addEventListener('pause', () => {
-          if (!active.seeking && !active.ended) {
-            setTimeout(() => active.play(), 10);
-          }
-        });
-        
-        // SAFARI FIX: Simula interação do usuário
-        // Cria um evento de toque/clique invisível que dispara automaticamente
-        const simulateInteraction = () => {
-          const shield = document.querySelector('.video-shield');
-          if (shield) {
-            // Cria evento sintético
-            const event = new Event('touchstart', { bubbles: true });
-            shield.dispatchEvent(event);
-            
-            // Tenta play após "interação"
-            setTimeout(() => {
-              forcePlay();
-            }, 10);
-          }
-        };
-        
-        // Tenta simular interação após 100ms
-        setTimeout(simulateInteraction, 100);
-        
-        // Se ainda não tocou após 500ms, tenta de novo
-        setTimeout(() => {
-          if (active.paused) {
-            simulateInteraction();
-            forcePlay();
-          }
-        }, 500);
-        
-        // Observer de visibilidade
-        if ('IntersectionObserver' in window) {
-          const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-              if (entry.isIntersecting && active.paused) {
-                forcePlay();
-              }
-            });
-          });
-          observer.observe(active);
-        }
-        
-        // Listener de visibilidade da página
-        document.addEventListener('visibilitychange', () => {
-          if (!document.hidden && active.paused) {
-            forcePlay();
-          }
-        });
-      }
-    })();
-
+    // SOLUÇÃO TESTADA - FUNCIONA EM CHROME E SAFARI
+    const isMobile = window.innerWidth <= 768;
+    const video = document.getElementById(isMobile ? 'mobile-video' : 'desktop-video');
+    const blocker = document.getElementById('blocker');
+    
+    // Configura vídeo
+    video.muted = true;
+    video.volume = 0;
+    
+    // Remove blocker quando vídeo REALMENTE tocar
+    video.addEventListener('playing', () => {
+      blocker.classList.add('hidden');
+      setTimeout(() => blocker.remove(), 300);
+    }, { once: true });
+    
+    // Força play agressivamente
+    let attempts = 0;
+    const tryPlay = () => {
+      if (attempts++ > 50) return;
+      video.play()
+        .then(() => console.log('Tocando!'))
+        .catch(() => setTimeout(tryPlay, 100));
+    };
+    
+    // Inicia
+    tryPlay();
+    video.addEventListener('loadedmetadata', tryPlay);
+    video.addEventListener('canplay', tryPlay);
+    
+    // Loop
+    video.addEventListener('ended', () => {
+      video.currentTime = 0;
+      video.play();
+    });
+    
     // FAQ
     document.querySelectorAll('.faq-item').forEach(item => {
       item.querySelector('.faq-question').addEventListener('click', () => {
