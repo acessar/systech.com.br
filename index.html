@@ -184,6 +184,18 @@
       background: transparent;
     }
     
+    /* GIF para Safari - solução de fallback */
+    .background-gif-safari {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+      z-index: 0;
+    }
+    
     .overlay {
       position: fixed;
       inset: 0;
@@ -533,6 +545,7 @@
       preload="auto"
       disablepictureinpicture
       onloadeddata="this.play().catch(()=>{})"
+      oncanplay="this.play().catch(()=>{})"
     ></video>
     <video
       class="background-mobile"
@@ -545,7 +558,10 @@
       preload="auto"
       disablepictureinpicture
       onloadeddata="this.play().catch(()=>{})"
+      oncanplay="this.play().catch(()=>{})"
     ></video>
+    <!-- GIF real para Safari mobile -->
+    <img class="background-gif-safari" src="homesys.gif" alt="" />
     <!-- Overlay para bloquear controles -->
     <div class="video-overlay-blocker"></div>
     <!-- Camada que cobre o botão inicial -->
@@ -692,16 +708,45 @@
   </section>
 
   <script>
+    // Detecta Safari
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    
     // Força autoplay imediato - SEM DELAYS
     (function() {
       const isMobile = window.innerWidth <= 768;
       const desktopVideo = document.querySelector('.background-video');
       const mobileVideo = document.querySelector('.background-mobile');
-      const activeVideo = isMobile ? mobileVideo : desktopVideo;
-      const inactiveVideo = isMobile ? desktopVideo : mobileVideo;
+      const gifSafari = document.querySelector('.background-gif-safari');
       const videoCover = document.querySelector('.video-cover');
       
       let coverRemoved = false;
+      
+      // SOLUÇÃO SAFARI: Se for Safari mobile, usa GIF ao invés de vídeo
+      if (isSafari && isMobile && gifSafari) {
+        // Esconde os vídeos
+        if (desktopVideo) desktopVideo.style.display = 'none';
+        if (mobileVideo) mobileVideo.style.display = 'none';
+        
+        // Mostra o GIF
+        gifSafari.style.display = 'block';
+        
+        // Remove cover imediatamente pois GIF carrega instantaneamente
+        setTimeout(() => {
+          if (videoCover && !coverRemoved) {
+            coverRemoved = true;
+            videoCover.style.display = 'none';
+            videoCover.remove();
+          }
+        }, 100);
+        
+        return; // Para aqui, GIF não precisa de mais processamento
+      }
+      
+      // Se não for Safari mobile, esconde o GIF e usa vídeo
+      if (gifSafari) gifSafari.style.display = 'none';
+      
+      const activeVideo = isMobile ? mobileVideo : desktopVideo;
+      const inactiveVideo = isMobile ? desktopVideo : mobileVideo;
       
       // Esconde vídeo inativo
       if (inactiveVideo) {
