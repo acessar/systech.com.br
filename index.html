@@ -93,6 +93,20 @@
       cursor: default;
     }
     
+    /* Camada visual que COBRE o botão de play até o vídeo tocar */
+    .video-cover {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+      pointer-events: none;
+    }
+    
+    /* Quando removida, some instantaneamente */
+    .video-cover.hidden {
+      display: none;
+    }
+    
     .background-video {
       position: absolute;
       top: 0;
@@ -532,6 +546,8 @@
     ></video>
     <!-- Overlay para bloquear controles -->
     <div class="video-overlay-blocker"></div>
+    <!-- Camada que cobre o botão inicial -->
+    <div class="video-cover"></div>
   </div>
   
   <div class="overlay"></div>
@@ -681,6 +697,7 @@
       const mobileVideo = document.querySelector('.background-mobile');
       const activeVideo = isMobile ? mobileVideo : desktopVideo;
       const inactiveVideo = isMobile ? desktopVideo : mobileVideo;
+      const videoCover = document.querySelector('.video-cover');
       
       // Esconde vídeo inativo
       if (inactiveVideo) {
@@ -693,6 +710,18 @@
         activeVideo.style.display = 'block';
         activeVideo.muted = true;
         activeVideo.playsInline = true;
+        
+        // REMOVE COVER INSTANTANEAMENTE quando vídeo tocar
+        const removeCover = () => {
+          if (videoCover) {
+            videoCover.style.display = 'none';
+            videoCover.remove();
+          }
+        };
+        
+        // Remove cover nos primeiros frames do vídeo
+        activeVideo.addEventListener('playing', removeCover, { once: true });
+        activeVideo.addEventListener('play', removeCover, { once: true });
         
         // FORÇA PLAY IMEDIATO - múltiplas tentativas síncronas
         const forcePlay = () => activeVideo.play().catch(() => setTimeout(forcePlay, 50));
