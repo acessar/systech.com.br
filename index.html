@@ -73,6 +73,14 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      display: block;
+    }
+
+    .background img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
     }
     
     .overlay {
@@ -158,12 +166,12 @@
         font-size: 0.9rem;
       }
       
-      .background {
-        background: url("homesys.gif") center center / cover no-repeat;
-      }
-      
       .background video {
         display: none;
+      }
+
+      .background img {
+        display: block;
       }
     }
 
@@ -421,6 +429,7 @@
       playsinline
       webkit-playsinline
     ></video>
+    <img src="homesys.gif" alt="Background animado" />
   </div>
   
   <div class="overlay"></div>
