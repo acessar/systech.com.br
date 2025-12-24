@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sys — IA Autônoma</title>
+
   <style>
     * {
       margin: 0;
@@ -18,19 +19,23 @@
       overflow: hidden;
     }
 
+    /* Fundo */
     .background {
       position: fixed;
       inset: 0;
       z-index: -2;
       overflow: hidden;
+      background: #000;
     }
 
+    /* Vídeo (desktop) */
     .background video {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
 
+    /* Overlay escuro */
     .overlay {
       position: fixed;
       inset: 0;
@@ -42,6 +47,7 @@
       z-index: -1;
     }
 
+    /* Conteúdo */
     .container {
       height: 100vh;
       display: flex;
@@ -93,29 +99,51 @@
       opacity: 0.35;
       color: #cfe0ff;
     }
+
+    /* 🔥 MOBILE: usa GIF como fundo */
+    @media (max-width: 768px) {
+      .background {
+        background: url("homesys.gif") center center / cover no-repeat;
+      }
+
+      .background video {
+        display: none;
+      }
+    }
   </style>
 </head>
+
 <body>
-  <!-- Fundo com vídeo/GIF -->
+
+  <!-- Fundo -->
   <div class="background">
-    <!-- Substitua o src pelo seu GIF ou vídeo -->
-    <video src="homesys.mp4" autoplay muted loop playsinline></video>
+    <!-- Vídeo só aparece no desktop -->
+    <video
+      src="homesys.mp4"
+      autoplay
+      muted
+      loop
+      playsinline
+      webkit-playsinline
+    ></video>
   </div>
 
+  <!-- Overlay -->
   <div class="overlay"></div>
 
-  <!-- Conteúdo centralizado -->
+  <!-- Conteúdo -->
   <main class="container">
-    <h1>IA autônoma de agendamentos</h1>
+    <h1>Automatização de Agendamentos</h1>
 
     <p>
-      A infraestrutura de crescimento da IA que transforma dados em pesquisa de qualidade e
-      satisfação dos clientes. Visando a performance de cada cliente através dos números.
+      A infraestrutura de crescimento da IA que transforma dados em pesquisa de qualidade
+      e satisfação dos clientes. Visando a performance de cada cliente através dos números.
     </p>
 
     <button class="cta">Solicitar demonstração</button>
 
     <div class="watermark">Sys • Automação Inteligente</div>
   </main>
+
 </body>
 </html>
