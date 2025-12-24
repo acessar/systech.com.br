@@ -67,6 +67,8 @@
       z-index: -2;
       overflow: hidden;
       background: #000;
+      /* Fallback caso nada carregue */
+      background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
     }
     
     .background-video {
@@ -76,9 +78,10 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      pointer-events: none;
     }
 
-    .background-gif {
+    .background-mobile {
       position: absolute;
       top: 0;
       left: 0;
@@ -86,6 +89,7 @@
       height: 100%;
       object-fit: cover;
       display: none;
+      pointer-events: none;
     }
     
     .overlay {
@@ -172,11 +176,11 @@
       }
       
       .background-video {
-        display: none;
+        display: none !important;
       }
 
-      .background-gif {
-        display: block;
+      .background-mobile {
+        display: block !important;
       }
     }
 
@@ -435,7 +439,15 @@
       playsinline
       webkit-playsinline
     ></video>
-    <img class="background-gif" src="homesyss.gif.mp4" alt="Background animado" />
+    <video
+      class="background-mobile"
+      src="homesyss.gif.mp4"
+      autoplay
+      muted
+      loop
+      playsinline
+      webkit-playsinline
+    ></video>
   </div>
   
   <div class="overlay"></div>
@@ -578,6 +590,36 @@
   </section>
 
   <script>
+    // Detecta mobile e força carregamento do vídeo correto
+    function isMobile() {
+      return window.innerWidth <= 768;
+    }
+
+    // Força o carregamento correto do background
+    function loadBackground() {
+      const video = document.querySelector('.background-video');
+      const mobileVideo = document.querySelector('.background-mobile');
+      
+      if (isMobile()) {
+        if (video) video.style.display = 'none';
+        if (mobileVideo) {
+          mobileVideo.style.display = 'block';
+          // Garante que o vídeo esteja tocando
+          mobileVideo.play().catch(err => console.log('Autoplay bloqueado:', err));
+        }
+      } else {
+        if (mobileVideo) mobileVideo.style.display = 'none';
+        if (video) {
+          video.style.display = 'block';
+          video.play().catch(err => console.log('Autoplay bloqueado:', err));
+        }
+      }
+    }
+
+    // Executa ao carregar a página
+    window.addEventListener('load', loadBackground);
+    window.addEventListener('resize', loadBackground);
+
     // FAQ Accordion
     const faqItems = document.querySelectorAll('.faq-item');
     
@@ -601,5 +643,3 @@
   </script>
 </body>
 </html>
-
-
