@@ -184,18 +184,6 @@
       background: transparent;
     }
     
-    /* GIF para Safari - solução de fallback */
-    .background-gif-safari {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: none;
-      z-index: 0;
-    }
-    
     .overlay {
       position: fixed;
       inset: 0;
@@ -560,8 +548,6 @@
       onloadeddata="this.play().catch(()=>{})"
       oncanplay="this.play().catch(()=>{})"
     ></video>
-    <!-- GIF real para Safari mobile -->
-    <img class="background-gif-safari" src="homesys.gif" alt="" />
     <!-- Overlay para bloquear controles -->
     <div class="video-overlay-blocker"></div>
     <!-- Camada que cobre o botão inicial -->
@@ -708,42 +694,14 @@
   </section>
 
   <script>
-    // Detecta Safari
-    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-    
-    // Força autoplay imediato - SEM DELAYS
+    // SOLUÇÃO UNIVERSAL - FUNCIONA EM TODOS OS NAVEGADORES
     (function() {
       const isMobile = window.innerWidth <= 768;
       const desktopVideo = document.querySelector('.background-video');
       const mobileVideo = document.querySelector('.background-mobile');
-      const gifSafari = document.querySelector('.background-gif-safari');
       const videoCover = document.querySelector('.video-cover');
       
       let coverRemoved = false;
-      
-      // SOLUÇÃO SAFARI: Se for Safari mobile, usa GIF ao invés de vídeo
-      if (isSafari && isMobile && gifSafari) {
-        // Esconde os vídeos
-        if (desktopVideo) desktopVideo.style.display = 'none';
-        if (mobileVideo) mobileVideo.style.display = 'none';
-        
-        // Mostra o GIF
-        gifSafari.style.display = 'block';
-        
-        // Remove cover imediatamente pois GIF carrega instantaneamente
-        setTimeout(() => {
-          if (videoCover && !coverRemoved) {
-            coverRemoved = true;
-            videoCover.style.display = 'none';
-            videoCover.remove();
-          }
-        }, 100);
-        
-        return; // Para aqui, GIF não precisa de mais processamento
-      }
-      
-      // Se não for Safari mobile, esconde o GIF e usa vídeo
-      if (gifSafari) gifSafari.style.display = 'none';
       
       const activeVideo = isMobile ? mobileVideo : desktopVideo;
       const inactiveVideo = isMobile ? desktopVideo : mobileVideo;
@@ -754,63 +712,56 @@
         inactiveVideo.pause();
       }
       
+      // Remove cover IMEDIATAMENTE sem esperar vídeo
+      const removeCover = () => {
+        if (videoCover && !coverRemoved) {
+          coverRemoved = true;
+          videoCover.style.display = 'none';
+          setTimeout(() => videoCover.remove(), 100);
+        }
+      };
+      
+      // Remove cover ANTES do vídeo tocar (50ms após script carregar)
+      setTimeout(removeCover, 50);
+      
       // Ativa vídeo correto
       if (activeVideo) {
         activeVideo.style.display = 'block';
         activeVideo.muted = true;
+        activeVideo.volume = 0;
         activeVideo.playsInline = true;
+        activeVideo.setAttribute('muted', '');
+        activeVideo.setAttribute('playsinline', '');
         
-        // REMOVE COVER assim que vídeo CARREGAR (não precisa tocar)
-        const removeCover = () => {
-          if (videoCover && !coverRemoved) {
-            coverRemoved = true;
-            videoCover.style.display = 'none';
-            videoCover.remove();
-          }
-        };
+        // FORÇA PLAY ULTRA AGRESSIVO usando requestAnimationFrame
+        let attempts = 0;
+        const maxAttempts = 200;
         
-        // Remove cover IMEDIATAMENTE quando tiver dados do vídeo
-        activeVideo.addEventListener('loadstart', removeCover, { once: true });
-        activeVideo.addEventListener('loadedmetadata', removeCover, { once: true });
-        activeVideo.addEventListener('loadeddata', removeCover, { once: true });
-        activeVideo.addEventListener('canplay', removeCover, { once: true });
-        activeVideo.addEventListener('canplaythrough', removeCover, { once: true });
-        
-        // GARANTIA: Remove cover após 200ms NO MÁXIMO (para Safari)
-        setTimeout(removeCover, 200);
-        
-        // FORÇA PLAY AGRESSIVO - Safari precisa de múltiplas tentativas
-        const forcePlay = () => {
-          const playPromise = activeVideo.play();
-          if (playPromise) {
-            playPromise.catch(() => {
-              // Se Safari bloquear, tenta de novo rapidamente
-              setTimeout(forcePlay, 50);
-              setTimeout(forcePlay, 150);
-              setTimeout(forcePlay, 300);
-              setTimeout(forcePlay, 500);
+        const ultraPlay = () => {
+          if (attempts >= maxAttempts) return;
+          attempts++;
+          
+          activeVideo.play()
+            .then(() => {
+              console.log('✅ Tocando!');
+            })
+            .catch(() => {
+              requestAnimationFrame(ultraPlay);
             });
-          }
         };
         
-        // Tenta tocar IMEDIATAMENTE
-        forcePlay();
-        setTimeout(forcePlay, 100);
+        // Inicia imediatamente
+        ultraPlay();
+        setTimeout(ultraPlay, 1);
+        setTimeout(ultraPlay, 10);
+        setTimeout(ultraPlay, 50);
+        setTimeout(ultraPlay, 100);
+        setTimeout(ultraPlay, 200);
+        setTimeout(ultraPlay, 500);
         
-        // Tenta novamente quando carregar
-        activeVideo.addEventListener('loadedmetadata', forcePlay);
-        activeVideo.addEventListener('loadeddata', forcePlay);
-        activeVideo.addEventListener('canplay', forcePlay);
-        
-        // Garante que toca em qualquer interação
-        const playOnInteraction = () => {
-          if (activeVideo.paused) {
-            forcePlay();
-          }
-        };
-        
-        ['touchstart', 'click', 'touchend', 'mousedown', 'scroll'].forEach(event => {
-          document.addEventListener(event, playOnInteraction, { once: true, passive: true });
+        // Tenta em TODOS os eventos de carregamento
+        ['loadstart', 'loadedmetadata', 'loadeddata', 'canplay', 'canplaythrough', 'progress', 'suspend'].forEach(event => {
+          activeVideo.addEventListener(event, ultraPlay, { passive: true });
         });
         
         // Loop infinito
@@ -818,15 +769,25 @@
           this.currentTime = 0;
           this.play();
         });
-      }
-      
-      // Previne pause acidental
-      if (activeVideo) {
+        
+        // Anti-pause
         activeVideo.addEventListener('pause', function() {
           if (!this.seeking && !this.ended) {
-            setTimeout(() => this.play(), 100);
+            this.play();
           }
         });
+        
+        // IntersectionObserver (Safari precisa)
+        if ('IntersectionObserver' in window) {
+          const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+              if (entry.isIntersecting && activeVideo.paused) {
+                ultraPlay();
+              }
+            });
+          }, { threshold: 0 });
+          observer.observe(activeVideo);
+        }
       }
     })();
 
