@@ -29,19 +29,6 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      pointer-events: none; /* impede controles no mobile */
-    }
-
-    .mobile-gif {
-      display: none;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    @media (max-width: 768px) {
-      .desktop-video { display: none; }
-      .mobile-gif { display: block; }
     }
 
     .overlay {
@@ -112,34 +99,18 @@
   <!-- Fundo com vídeo/GIF -->
   <div class="background">
     <!-- Substitua o src pelo seu GIF ou vídeo -->
-    <video
-      class="desktop-video"
-      autoplay
-      muted
-      loop
-      playsinline
-      webkit-playsinline
-      preload="auto"
-      disablepictureinpicture
-      controls="false"
-    >
-      <source src="homesys.mp4" type="video/mp4" />
-    </video>
-
-    <!-- Fallback para mobile -->
-    <img class="mobile-gif" src="homesys.gif" alt="Background animado" />
+    <video src="homesys.mp4" autoplay muted loop playsinline></video>
   </div>
 
   <div class="overlay"></div>
 
   <!-- Conteúdo centralizado -->
   <main class="container">
-    <h1>IA autônoma que impulsiona agendamentos</h1>
+    <h1>IA autônoma de agendamentos</h1>
 
     <p>
       A infraestrutura de crescimento da IA que transforma dados em pesquisa de qualidade e
-      satisfação dos clientes. Visando a performance de cada cliente através dos números,
-      permitindo que a Sys impulsione de forma consistente o crescimento da sua receita.
+      satisfação dos clientes. Visando a performance de cada cliente através dos números.
     </p>
 
     <button class="cta">Solicitar demonstração</button>
