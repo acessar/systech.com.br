@@ -109,6 +109,21 @@
       background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
     }
     
+    /* Cover para esconder botão de play inicial */
+    .video-loading-cover {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+      z-index: 1;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    
+    .video-loading-cover.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    
     .background-video {
       position: absolute;
       top: 0;
@@ -121,20 +136,40 @@
       -webkit-transform: translateZ(0);
       transform: translateZ(0);
       will-change: transform;
+      /* Esconde overlay de carregamento */
+      background: transparent;
     }
     
-    /* Esconde controles de vídeo */
+    /* Esconde TODOS os controles de vídeo */
     .background-video::-webkit-media-controls {
       display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
     }
     .background-video::-webkit-media-controls-enclosure {
       display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
     }
     .background-video::-webkit-media-controls-panel {
       display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
     }
     .background-video::-webkit-media-controls-play-button {
       display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+    }
+    .background-video::-webkit-media-controls-start-playback-button {
+      display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+    }
+    .background-video::-webkit-media-controls-overlay-play-button {
+      display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
     }
 
     .background-mobile {
@@ -150,20 +185,40 @@
       -webkit-transform: translateZ(0);
       transform: translateZ(0);
       will-change: transform;
+      /* Esconde overlay de carregamento */
+      background: transparent;
     }
     
-    /* Esconde controles de vídeo mobile */
+    /* Esconde TODOS os controles de vídeo mobile */
     .background-mobile::-webkit-media-controls {
       display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
     }
     .background-mobile::-webkit-media-controls-enclosure {
       display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
     }
     .background-mobile::-webkit-media-controls-panel {
       display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
     }
     .background-mobile::-webkit-media-controls-play-button {
       display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+    }
+    .background-mobile::-webkit-media-controls-start-playback-button {
+      display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+    }
+    .background-mobile::-webkit-media-controls-overlay-play-button {
+      display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
     }
     
     .overlay {
@@ -532,6 +587,7 @@
       x-webkit-airplay="deny"
       controls="false"
     ></video>
+    <div class="video-loading-cover"></div>
   </div>
   
   <div class="overlay"></div>
@@ -679,6 +735,17 @@
       return window.innerWidth <= 768;
     }
 
+    // Esconde o loading cover
+    function hideLoadingCover() {
+      const cover = document.querySelector('.video-loading-cover');
+      if (cover) {
+        setTimeout(() => {
+          cover.classList.add('hidden');
+          setTimeout(() => cover.remove(), 300);
+        }, 200);
+      }
+    }
+
     // Função para forçar play do vídeo AGRESSIVAMENTE
     function forcePlay(videoElement) {
       if (!videoElement) return;
@@ -696,6 +763,7 @@
           playPromise
             .then(() => {
               console.log('✅ Vídeo reproduzindo!');
+              hideLoadingCover();
             })
             .catch(error => {
               console.log('⏳ Aguardando... tentando novamente');
@@ -757,6 +825,9 @@
         this.play();
       });
       
+      mobileVideo.addEventListener('play', hideLoadingCover);
+      mobileVideo.addEventListener('playing', hideLoadingCover);
+      
       mobileVideo.addEventListener('loadedmetadata', function() {
         if (isMobile()) forcePlay(this);
       });
@@ -775,6 +846,9 @@
         this.currentTime = 0;
         this.play();
       });
+      
+      desktopVideo.addEventListener('play', hideLoadingCover);
+      desktopVideo.addEventListener('playing', hideLoadingCover);
       
       desktopVideo.addEventListener('loadedmetadata', function() {
         if (!isMobile()) forcePlay(this);
