@@ -99,18 +99,27 @@
   <!-- Fundo com vídeo/GIF -->
   <div class="background">
     <!-- Substitua o src pelo seu GIF ou vídeo -->
-    <video src="homesys.mp4" autoplay muted loop playsinline></video>
+    <video src="homesys.mp4" autoplay muted loop playsinline webkit-playsinline preload="auto"></video>
+    <script>
+      const video = document.querySelector('video');
+      if (video) {
+        video.play().catch(() => {
+          // fallback silencioso para mobile
+        });
+      }
+    </script>
   </div>
 
   <div class="overlay"></div>
 
   <!-- Conteúdo centralizado -->
   <main class="container">
-    <h1>IA autônoma de agendamentos</h1>
+    <h1>IA autônoma que impulsiona agendamentos</h1>
 
     <p>
       A infraestrutura de crescimento da IA que transforma dados em pesquisa de qualidade e
-      satisfação dos clientes. Visando a performance de cada cliente através dos números.
+      satisfação dos clientes. Visando a performance de cada cliente através dos números,
+      permitindo que a Sys impulsione de forma consistente o crescimento da sua receita.
     </p>
 
     <button class="cta">Solicitar demonstração</button>
