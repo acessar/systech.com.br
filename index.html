@@ -304,6 +304,101 @@
         gap: 24px;
       }
     }
+
+    /* ===== SEÇÃO FAQs ===== */
+    .faqs-section {
+      background: #000;
+      color: #fff;
+      padding: 100px 24px;
+    }
+    
+    .faqs-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    .faqs-title {
+      font-size: clamp(2.5rem, 5vw, 3.5rem);
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 60px;
+      letter-spacing: -0.02em;
+    }
+    
+    .faq-item {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 0;
+    }
+    
+    .faq-question {
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: #fff;
+      text-align: left;
+      padding: 28px 0;
+      font-size: clamp(1.1rem, 2vw, 1.3rem);
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      transition: color 0.3s ease;
+    }
+    
+    .faq-question:hover {
+      color: #dbe6ff;
+    }
+    
+    .faq-icon {
+      font-size: 1.5rem;
+      transition: transform 0.3s ease;
+      flex-shrink: 0;
+    }
+    
+    .faq-item.active .faq-icon {
+      transform: rotate(45deg);
+    }
+    
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.4s ease;
+      padding: 0;
+    }
+    
+    .faq-answer-content {
+      font-size: clamp(1rem, 2vw, 1.1rem);
+      line-height: 1.8;
+      color: #bbb;
+      padding-bottom: 28px;
+    }
+    
+    .faq-item.active .faq-answer {
+      max-height: 1000px;
+      padding-top: 8px;
+    }
+
+    /* Mobile - FAQs */
+    @media (max-width: 768px) {
+      .faqs-section {
+        padding: 60px 20px;
+      }
+      
+      .faqs-title {
+        margin-bottom: 40px;
+      }
+      
+      .faq-question {
+        padding: 20px 0;
+        font-size: 1.1rem;
+      }
+      
+      .faq-icon {
+        font-size: 1.3rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -357,7 +452,7 @@
           <a href="#solicitar" class="cta">Solicitar Ferramenta</a>
         </div>
         <div class="product-image">
-          <img src="product.png" alt="SYS IA" />
+          <img src="product.jpeg" alt="SYS IA" />
         </div>
       </div>
 
@@ -406,5 +501,88 @@
       </div>
     </div>
   </section>
+
+  <!-- Seção FAQs -->
+  <section class="faqs-section" id="faqs">
+    <div class="faqs-container">
+      <h2 class="faqs-title">FAQs</h2>
+      
+      <div class="faq-item">
+        <button class="faq-question">
+          <span>Qual é o nível de esforço necessário para implementar e manter a minha conta?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">
+          <div class="faq-answer-content">
+            O esforço é mínimo. A implementação é rápida e simples: você só precisa nos informar o nome, o preço e o tempo dos seus principais serviços.
+            A integração costuma levar cerca de 24 horas e não exige nenhum trabalho técnico ou de engenharia da sua equipe.
+            A SYS foi desenvolvida para se integrar totalmente ao seu negócio de forma automática, sem demandar suporte contínuo da sua equipe — assim, você pode focar no que realmente importa.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          <span>Se já contamos com uma equipe interna de marketing, por que integrar a SYS ao nosso negócio?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">
+          <div class="faq-answer-content">
+            A SYS é uma plataforma de inteligência artificial que se integra ao seu ecossistema operacional e atua com um objetivo claro: identificar e ativar oportunidades de receita que normalmente passam despercebidas.
+            A partir da análise avançada de dados dos seus clientes — incluindo comportamento, frequência de agendamentos, localização e múltiplas outras variáveis — a SYS potencializa o crescimento tanto na aquisição de novos clientes quanto no aumento da recorrência.
+            Esse aprendizado é reforçado por centenas de parâmetros analíticos que vão além da capacidade operacional de uma equipe interna tradicional.
+            A SYS não substitui seus esforços atuais; ela os fortalece, atuando como uma ferramenta estratégica adicional, totalmente focada em maximizar resultados financeiros.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          <span>Quais são os tipos de empresas mais comuns com as quais a SYS trabalha?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">
+          <div class="faq-answer-content">
+            A SYS foi desenvolvida para apoiar empresas que operam com serviços e projetos, atuando em um ecossistema amplo e diversificado. Trabalhamos com clientes de múltiplas verticais e setores, o que garante flexibilidade e inteligência para atender diferentes modelos de negócio com eficiência.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          <span>A SYS atende empresas que ainda não possuem um grande volume de clientes?</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">
+          <div class="faq-answer-content">
+            Sim. A SYS foi projetada para escalar com o seu negócio. Utilizando métricas orientadas por IA, a plataforma transforma cada visitante em uma oportunidade de conversão e fidelização, ajudando empresas de qualquer porte a gerar clientes recorrentes desde o primeiro contato.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // FAQ Accordion
+    const faqItems = document.querySelectorAll('.faq-item');
+    
+    faqItems.forEach(item => {
+      const question = item.querySelector('.faq-question');
+      
+      question.addEventListener('click', () => {
+        const isActive = item.classList.contains('active');
+        
+        // Fecha todos os outros itens
+        faqItems.forEach(otherItem => {
+          otherItem.classList.remove('active');
+        });
+        
+        // Se não estava ativo, abre o clicado
+        if (!isActive) {
+          item.classList.add('active');
+        }
+      });
+    });
+  </script>
 </body>
 </html>
