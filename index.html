@@ -5,41 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sys — IA Autônoma</title>
   <script>
-    // Tenta iniciar vídeos o mais cedo possível
+    // Inicia vídeos INSTANTANEAMENTE
     document.addEventListener('DOMContentLoaded', function() {
       const videos = document.querySelectorAll('video');
       videos.forEach(video => {
         video.muted = true;
-        video.setAttribute('muted', '');
-        video.setAttribute('playsinline', '');
-        video.removeAttribute('controls');
-        video.controls = false;
-        
-        // Força play imediato
-        const playVideo = () => {
-          video.play()
-            .then(() => console.log('Vídeo iniciado!'))
-            .catch(e => {
-              console.log('Tentando novamente...');
-              setTimeout(playVideo, 100);
-            });
-        };
-        
-        playVideo();
-        
-        // Tenta novamente quando o vídeo estiver pronto
-        video.addEventListener('loadeddata', playVideo);
-        video.addEventListener('canplay', playVideo);
+        video.playsInline = true;
+        const play = () => video.play().catch(() => setTimeout(play, 50));
+        play();
       });
-    });
-    
-    // Força play em qualquer interação
-    ['touchstart', 'click', 'scroll'].forEach(event => {
-      document.addEventListener(event, function() {
-        document.querySelectorAll('video').forEach(v => {
-          if (v.paused) v.play();
-        });
-      }, { once: true, passive: true });
     });
   </script>
   <style>
@@ -109,6 +83,16 @@
       background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
     }
     
+    /* Overlay invisível que bloqueia cliques nos controles */
+    .video-overlay-blocker {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background: transparent;
+      pointer-events: all;
+      cursor: default;
+    }
+    
     .background-video {
       position: absolute;
       top: 0;
@@ -116,7 +100,7 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      pointer-events: none;
+      z-index: 0;
       /* Otimizações para iOS */
       -webkit-transform: translateZ(0);
       transform: translateZ(0);
@@ -125,34 +109,46 @@
       background: transparent;
     }
     
-    /* Esconde TODOS os controles de vídeo */
-    .background-video::-webkit-media-controls {
+    /* Esconde TODOS os controles de vídeo - FORÇADO */
+    video::-webkit-media-controls {
       display: none !important;
+      -webkit-appearance: none !important;
       opacity: 0 !important;
       visibility: hidden !important;
     }
-    .background-video::-webkit-media-controls-enclosure {
+    video::-webkit-media-controls-enclosure {
       display: none !important;
+      -webkit-appearance: none !important;
       opacity: 0 !important;
       visibility: hidden !important;
     }
-    .background-video::-webkit-media-controls-panel {
+    video::-webkit-media-controls-panel {
       display: none !important;
+      -webkit-appearance: none !important;
       opacity: 0 !important;
       visibility: hidden !important;
     }
-    .background-video::-webkit-media-controls-play-button {
+    video::-webkit-media-controls-play-button {
       display: none !important;
+      -webkit-appearance: none !important;
       opacity: 0 !important;
       visibility: hidden !important;
     }
-    .background-video::-webkit-media-controls-start-playback-button {
+    video::-webkit-media-controls-start-playback-button {
       display: none !important;
+      -webkit-appearance: none !important;
       opacity: 0 !important;
       visibility: hidden !important;
     }
-    .background-video::-webkit-media-controls-overlay-play-button {
+    video::-webkit-media-controls-overlay-play-button {
       display: none !important;
+      -webkit-appearance: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+    }
+    video::--webkit-media-controls-overlay-enclosure {
+      display: none !important;
+      -webkit-appearance: none !important;
       opacity: 0 !important;
       visibility: hidden !important;
     }
@@ -165,45 +161,13 @@
       height: 100%;
       object-fit: cover;
       display: none;
-      pointer-events: none;
+      z-index: 0;
       /* Previne pausas no iOS */
       -webkit-transform: translateZ(0);
       transform: translateZ(0);
       will-change: transform;
       /* Esconde overlay de carregamento */
       background: transparent;
-    }
-    
-    /* Esconde TODOS os controles de vídeo mobile */
-    .background-mobile::-webkit-media-controls {
-      display: none !important;
-      opacity: 0 !important;
-      visibility: hidden !important;
-    }
-    .background-mobile::-webkit-media-controls-enclosure {
-      display: none !important;
-      opacity: 0 !important;
-      visibility: hidden !important;
-    }
-    .background-mobile::-webkit-media-controls-panel {
-      display: none !important;
-      opacity: 0 !important;
-      visibility: hidden !important;
-    }
-    .background-mobile::-webkit-media-controls-play-button {
-      display: none !important;
-      opacity: 0 !important;
-      visibility: hidden !important;
-    }
-    .background-mobile::-webkit-media-controls-start-playback-button {
-      display: none !important;
-      opacity: 0 !important;
-      visibility: hidden !important;
-    }
-    .background-mobile::-webkit-media-controls-overlay-play-button {
-      display: none !important;
-      opacity: 0 !important;
-      visibility: hidden !important;
     }
     
     .overlay {
@@ -554,9 +518,6 @@
       webkit-playsinline
       preload="auto"
       disablepictureinpicture
-      defaultMuted
-      x-webkit-airplay="deny"
-      controls="false"
     ></video>
     <video
       class="background-mobile"
@@ -568,10 +529,9 @@
       webkit-playsinline
       preload="auto"
       disablepictureinpicture
-      defaultMuted
-      x-webkit-airplay="deny"
-      controls="false"
     ></video>
+    <!-- Overlay para bloquear controles -->
+    <div class="video-overlay-blocker"></div>
   </div>
   
   <div class="overlay"></div>
@@ -714,134 +674,52 @@
   </section>
 
   <script>
-    // Detecta mobile
-    function isMobile() {
-      return window.innerWidth <= 768;
-    }
-
-    // Função para forçar play do vídeo AGRESSIVAMENTE
-    function forcePlay(videoElement) {
-      if (!videoElement) return;
-      
-      videoElement.muted = true;
-      videoElement.playsInline = true;
-      videoElement.controls = false;
-      videoElement.removeAttribute('controls');
-      
-      // Tenta tocar imediatamente
-      const attemptPlay = () => {
-        const playPromise = videoElement.play();
-        
-        if (playPromise !== undefined) {
-          playPromise
-            .then(() => {
-              console.log('✅ Vídeo reproduzindo!');
-            })
-            .catch(error => {
-              console.log('⏳ Aguardando... tentando novamente');
-              setTimeout(attemptPlay, 100);
-            });
-        }
-      };
-      
-      attemptPlay();
-      
-      // Tenta múltiplas vezes
-      setTimeout(attemptPlay, 50);
-      setTimeout(attemptPlay, 200);
-      setTimeout(attemptPlay, 500);
-    }
-
-    // Força o carregamento correto do background
-    function loadBackground() {
-      const video = document.querySelector('.background-video');
+    // Força autoplay imediato - SEM DELAYS
+    (function() {
+      const isMobile = window.innerWidth <= 768;
+      const desktopVideo = document.querySelector('.background-video');
       const mobileVideo = document.querySelector('.background-mobile');
+      const activeVideo = isMobile ? mobileVideo : desktopVideo;
+      const inactiveVideo = isMobile ? desktopVideo : mobileVideo;
       
-      if (isMobile()) {
-        if (video) {
-          video.style.display = 'none';
-          video.pause();
-        }
-        if (mobileVideo) {
-          mobileVideo.style.display = 'block';
-          forcePlay(mobileVideo);
-        }
-      } else {
-        if (mobileVideo) {
-          mobileVideo.style.display = 'none';
-          mobileVideo.pause();
-        }
-        if (video) {
-          video.style.display = 'block';
-          forcePlay(video);
-        }
+      // Esconde vídeo inativo
+      if (inactiveVideo) {
+        inactiveVideo.style.display = 'none';
+        inactiveVideo.pause();
       }
-    }
-
-    // Inicializa vídeos
-    const mobileVideo = document.querySelector('.background-mobile');
-    const desktopVideo = document.querySelector('.background-video');
-    
-    // Remove controles completamente
-    [mobileVideo, desktopVideo].forEach(v => {
-      if (v) {
-        v.controls = false;
-        v.removeAttribute('controls');
+      
+      // Ativa vídeo correto
+      if (activeVideo) {
+        activeVideo.style.display = 'block';
+        activeVideo.muted = true;
+        activeVideo.playsInline = true;
+        
+        // FORÇA PLAY IMEDIATO - múltiplas tentativas síncronas
+        const forcePlay = () => activeVideo.play().catch(() => setTimeout(forcePlay, 50));
+        
+        // Tenta imediatamente
+        forcePlay();
+        
+        // Garante que toca quando carregar
+        activeVideo.addEventListener('loadeddata', forcePlay, { once: true });
+        activeVideo.addEventListener('canplay', forcePlay, { once: true });
+        
+        // Loop infinito
+        activeVideo.addEventListener('ended', function() {
+          this.currentTime = 0;
+          this.play();
+        });
       }
-    });
-    
-    // Garante loop infinito
-    if (mobileVideo) {
-      mobileVideo.addEventListener('ended', function() {
-        this.currentTime = 0;
-        this.play();
-      });
       
-      mobileVideo.addEventListener('loadedmetadata', function() {
-        if (isMobile()) forcePlay(this);
-      });
-      
-      mobileVideo.addEventListener('canplay', function() {
-        if (isMobile()) forcePlay(this);
-      });
-      
-      mobileVideo.addEventListener('loadeddata', function() {
-        if (isMobile()) forcePlay(this);
-      });
-    }
-
-    if (desktopVideo) {
-      desktopVideo.addEventListener('ended', function() {
-        this.currentTime = 0;
-        this.play();
-      });
-      
-      desktopVideo.addEventListener('loadedmetadata', function() {
-        if (!isMobile()) forcePlay(this);
-      });
-      
-      desktopVideo.addEventListener('canplay', function() {
-        if (!isMobile()) forcePlay(this);
-      });
-      
-      desktopVideo.addEventListener('loadeddata', function() {
-        if (!isMobile()) forcePlay(this);
-      });
-    }
-
-    // Executa IMEDIATAMENTE (sem esperar nada)
-    loadBackground();
-    
-    // E também nos eventos normais
-    window.addEventListener('load', loadBackground);
-    window.addEventListener('DOMContentLoaded', loadBackground);
-    
-    // Tenta reproduzir quando a página fica visível
-    document.addEventListener('visibilitychange', function() {
-      if (!document.hidden) {
-        loadBackground();
+      // Previne pause acidental
+      if (activeVideo) {
+        activeVideo.addEventListener('pause', function() {
+          if (!this.seeking) {
+            this.play();
+          }
+        });
       }
-    });
+    })();
 
     // FAQ Accordion
     const faqItems = document.querySelectorAll('.faq-item');
