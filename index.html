@@ -29,6 +29,19 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      pointer-events: none; /* impede controles no mobile */
+    }
+
+    .mobile-gif {
+      display: none;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    @media (max-width: 768px) {
+      .desktop-video { display: none; }
+      .mobile-gif { display: block; }
     }
 
     .overlay {
@@ -99,15 +112,22 @@
   <!-- Fundo com vídeo/GIF -->
   <div class="background">
     <!-- Substitua o src pelo seu GIF ou vídeo -->
-    <video src="homesys.mp4" autoplay muted loop playsinline webkit-playsinline preload="auto"></video>
-    <script>
-      const video = document.querySelector('video');
-      if (video) {
-        video.play().catch(() => {
-          // fallback silencioso para mobile
-        });
-      }
-    </script>
+    <video
+      class="desktop-video"
+      autoplay
+      muted
+      loop
+      playsinline
+      webkit-playsinline
+      preload="auto"
+      disablepictureinpicture
+      controls="false"
+    >
+      <source src="homesys.mp4" type="video/mp4" />
+    </video>
+
+    <!-- Fallback para mobile -->
+    <img class="mobile-gif" src="homesys.gif" alt="Background animado" />
   </div>
 
   <div class="overlay"></div>
