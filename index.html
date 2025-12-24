@@ -532,6 +532,7 @@
       webkit-playsinline
       preload="auto"
       disablepictureinpicture
+      onloadeddata="this.play().catch(()=>{})"
     ></video>
     <video
       class="background-mobile"
@@ -543,6 +544,7 @@
       webkit-playsinline
       preload="auto"
       disablepictureinpicture
+      onloadeddata="this.play().catch(()=>{})"
     ></video>
     <!-- Overlay para bloquear controles -->
     <div class="video-overlay-blocker"></div>
@@ -699,6 +701,8 @@
       const inactiveVideo = isMobile ? desktopVideo : mobileVideo;
       const videoCover = document.querySelector('.video-cover');
       
+      let coverRemoved = false;
+      
       // Esconde vídeo inativo
       if (inactiveVideo) {
         inactiveVideo.style.display = 'none';
@@ -711,27 +715,58 @@
         activeVideo.muted = true;
         activeVideo.playsInline = true;
         
-        // REMOVE COVER INSTANTANEAMENTE quando vídeo tocar
+        // REMOVE COVER assim que vídeo CARREGAR (não precisa tocar)
         const removeCover = () => {
-          if (videoCover) {
+          if (videoCover && !coverRemoved) {
+            coverRemoved = true;
             videoCover.style.display = 'none';
             videoCover.remove();
           }
         };
         
-        // Remove cover nos primeiros frames do vídeo
-        activeVideo.addEventListener('playing', removeCover, { once: true });
-        activeVideo.addEventListener('play', removeCover, { once: true });
+        // Remove cover IMEDIATAMENTE quando tiver dados do vídeo
+        activeVideo.addEventListener('loadstart', removeCover, { once: true });
+        activeVideo.addEventListener('loadedmetadata', removeCover, { once: true });
+        activeVideo.addEventListener('loadeddata', removeCover, { once: true });
+        activeVideo.addEventListener('canplay', removeCover, { once: true });
+        activeVideo.addEventListener('canplaythrough', removeCover, { once: true });
         
-        // FORÇA PLAY IMEDIATO - múltiplas tentativas síncronas
-        const forcePlay = () => activeVideo.play().catch(() => setTimeout(forcePlay, 50));
+        // GARANTIA: Remove cover após 200ms NO MÁXIMO (para Safari)
+        setTimeout(removeCover, 200);
         
-        // Tenta imediatamente
+        // FORÇA PLAY AGRESSIVO - Safari precisa de múltiplas tentativas
+        const forcePlay = () => {
+          const playPromise = activeVideo.play();
+          if (playPromise) {
+            playPromise.catch(() => {
+              // Se Safari bloquear, tenta de novo rapidamente
+              setTimeout(forcePlay, 50);
+              setTimeout(forcePlay, 150);
+              setTimeout(forcePlay, 300);
+              setTimeout(forcePlay, 500);
+            });
+          }
+        };
+        
+        // Tenta tocar IMEDIATAMENTE
         forcePlay();
+        setTimeout(forcePlay, 100);
         
-        // Garante que toca quando carregar
-        activeVideo.addEventListener('loadeddata', forcePlay, { once: true });
-        activeVideo.addEventListener('canplay', forcePlay, { once: true });
+        // Tenta novamente quando carregar
+        activeVideo.addEventListener('loadedmetadata', forcePlay);
+        activeVideo.addEventListener('loadeddata', forcePlay);
+        activeVideo.addEventListener('canplay', forcePlay);
+        
+        // Garante que toca em qualquer interação
+        const playOnInteraction = () => {
+          if (activeVideo.paused) {
+            forcePlay();
+          }
+        };
+        
+        ['touchstart', 'click', 'touchend', 'mousedown', 'scroll'].forEach(event => {
+          document.addEventListener(event, playOnInteraction, { once: true, passive: true });
+        });
         
         // Loop infinito
         activeVideo.addEventListener('ended', function() {
@@ -743,8 +778,8 @@
       // Previne pause acidental
       if (activeVideo) {
         activeVideo.addEventListener('pause', function() {
-          if (!this.seeking) {
-            this.play();
+          if (!this.seeking && !this.ended) {
+            setTimeout(() => this.play(), 100);
           }
         });
       }
