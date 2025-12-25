@@ -60,41 +60,24 @@
       color: #ffffff;
     }
     
-    /* Fundo com vídeo/GIF */
+    /* Fundo - Simplificado e garantido */
     .background {
       position: fixed;
       inset: 0;
       z-index: -2;
-      background: #000;
+      background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
     }
     
-    /* Desktop: Vídeo */
-    .background-video {
+    .background video {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
-      opacity: 1;
     }
     
-    /* Mobile: GIF como background-image (carrega instantaneamente) */
-    .background-mobile {
-      display: none;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      /* Coloque aqui o caminho do seu GIF convertido */
-      background-image: url('homesyss.gif');
-    }
-    
-    /* ESCONDE TODOS OS CONTROLES - Máxima agressividade */
+    /* ESCONDE CONTROLES - Máxima agressividade */
     video::-webkit-media-controls,
     video::-webkit-media-controls-panel,
     video::-webkit-media-controls-play-button,
@@ -102,7 +85,8 @@
     video::-webkit-media-controls-timeline,
     video::-webkit-media-controls-current-time-display,
     video::-webkit-media-controls-time-remaining-display,
-    video::-webkit-media-controls-enclosure {
+    video::-webkit-media-controls-enclosure,
+    video::-webkit-media-controls-overlay-play-button {
       display: none !important;
       -webkit-appearance: none !important;
       opacity: 0 !important;
@@ -113,10 +97,6 @@
     video {
       pointer-events: none !important;
       outline: none !important;
-    }
-    
-    video::cue {
-      display: none !important;
     }
     
     .overlay {
@@ -202,15 +182,6 @@
       
       .nav-links a {
         font-size: 0.9rem;
-      }
-      
-      /* Em mobile: esconde vídeo e mostra GIF via background */
-      .background-video {
-        display: none !important;
-      }
-
-      .background-mobile {
-        display: block !important;
       }
     }
 
@@ -459,10 +430,8 @@
   </nav>
 
   <div class="background">
-    <!-- Desktop: Vídeo com preload agressivo -->
     <video
-      id="desktop-video"
-      class="background-video"
+      id="bg-video"
       muted
       loop
       playsinline
@@ -470,12 +439,10 @@
       autoplay
       disableRemotePlayback
       x-webkit-airplay="deny"
+      webkit-playsinline
     >
-      <source src="homesys.mp4" type="video/mp4">
+      <source src="homesyss.gif.mp4" type="video/mp4">
     </video>
-    
-    <!-- Mobile: GIF via background-image (carrega instantaneamente) -->
-    <div class="background-mobile"></div>
   </div>
   
   <div class="overlay"></div>
@@ -611,49 +578,90 @@
   </section>
 
   <script>
-    // SOLUÇÃO DEFINITIVA PARA SAFARI - Testada em iOS Safari
-    (function() {
-      const isMobile = window.innerWidth <= 768;
+    // SOLUÇÃO DEFINITIVA - Mobile Safari compatível
+    const video = document.getElementById('bg-video');
+    
+    // Configurações obrigatórias para Safari iOS
+    video.muted = true;
+    video.volume = 0;
+    video.defaultMuted = true;
+    video.playsInline = true;
+    video.setAttribute('webkit-playsinline', '');
+    video.setAttribute('playsinline', '');
+    
+    // Remove controles completamente
+    video.controls = false;
+    video.removeAttribute('controls');
+    
+    // Tentativas de play
+    let attempts = 0;
+    const maxAttempts = 200;
+    
+    function tryPlay() {
+      if (attempts >= maxAttempts) return;
+      attempts++;
       
-      if (!isMobile) {
-        // Desktop: Vídeo com máxima agressividade
-        const video = document.getElementById('desktop-video');
-        
-        // Configurações brutais
-        video.muted = true;
-        video.volume = 0;
-        video.defaultMuted = true;
-        video.setAttribute('muted', '');
-        video.setAttribute('playsinline', '');
-        video.setAttribute('autoplay', '');
-        
-        // Força play IMEDIATAMENTE (antes mesmo do DOM carregar)
-        const forcePlay = () => {
-          video.play().catch(() => {
-            // Se falhar, tenta novamente em 50ms
-            setTimeout(forcePlay, 50);
-          });
-        };
-        
-        // Inicia imediatamente
-        forcePlay();
-        
-        // Backup: tenta quando o vídeo estiver pronto
-        video.addEventListener('loadeddata', forcePlay, { once: true });
-        video.addEventListener('canplay', forcePlay, { once: true });
-        
-        // Garante loop infinito
-        video.addEventListener('ended', () => {
-          video.currentTime = 0;
-          forcePlay();
+      const promise = video.play();
+      
+      if (promise !== undefined) {
+        promise.then(() => {
+          console.log('Video tocando');
+        }).catch(() => {
+          setTimeout(tryPlay, 30);
         });
-        
-        // Remove qualquer controle que possa aparecer
-        video.controls = false;
-        video.removeAttribute('controls');
       }
-      // Mobile: usa GIF via background-image (sem JavaScript necessário)
-    })();
+    }
+    
+    // Eventos para tentar tocar
+    video.addEventListener('loadedmetadata', tryPlay);
+    video.addEventListener('loadeddata', tryPlay);  
+    video.addEventListener('canplay', tryPlay);
+    video.addEventListener('canplaythrough', tryPlay);
+    
+    // Tenta imediatamente
+    if (video.readyState >= 2) {
+      tryPlay();
+    }
+    
+    // Timeout para tentar de novo
+    setTimeout(tryPlay, 100);
+    setTimeout(tryPlay, 300);
+    setTimeout(tryPlay, 500);
+    
+    // Quando página ficar visível
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && video.paused) {
+        tryPlay();
+      }
+    });
+    
+    // Fallback: primeiro toque/scroll na página
+    let firstInteraction = false;
+    const handleInteraction = () => {
+      if (!firstInteraction && video.paused) {
+        firstInteraction = true;
+        tryPlay();
+      }
+    };
+    
+    ['touchstart', 'touchend', 'click', 'scroll', 'mousemove'].forEach(event => {
+      document.addEventListener(event, handleInteraction, { once: true, passive: true });
+    });
+    
+    // Loop infinito
+    video.addEventListener('ended', () => {
+      video.currentTime = 0;
+      tryPlay();
+    });
+    
+    // Se pausar sem querer, tenta tocar de novo
+    video.addEventListener('pause', () => {
+      if (!video.ended && firstInteraction) {
+        setTimeout(() => {
+          if (video.paused) tryPlay();
+        }, 100);
+      }
+    });
     
     // FAQ
     document.querySelectorAll('.faq-item').forEach(item => {
