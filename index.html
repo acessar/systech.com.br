@@ -19,7 +19,6 @@
       overflow-x: hidden;
     }
     
-    /* Navegação */
     nav {
       position: fixed;
       top: 0;
@@ -60,7 +59,6 @@
       color: #ffffff;
     }
     
-    /* Fundo - Simplificado e garantido */
     .background {
       position: fixed;
       inset: 0;
@@ -77,14 +75,10 @@
       object-fit: cover;
     }
     
-    /* ESCONDE CONTROLES - Máxima agressividade */
     video::-webkit-media-controls,
     video::-webkit-media-controls-panel,
     video::-webkit-media-controls-play-button,
     video::-webkit-media-controls-start-playback-button,
-    video::-webkit-media-controls-timeline,
-    video::-webkit-media-controls-current-time-display,
-    video::-webkit-media-controls-time-remaining-display,
     video::-webkit-media-controls-enclosure,
     video::-webkit-media-controls-overlay-play-button {
       display: none !important;
@@ -96,17 +90,25 @@
     
     video {
       pointer-events: none !important;
-      outline: none !important;
+    }
+    
+    .video-cover {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+    
+    .video-cover.loaded {
+      opacity: 0;
     }
     
     .overlay {
       position: fixed;
       inset: 0;
-      background: linear-gradient(
-        180deg,
-        rgba(0, 10, 30, 0.65),
-        rgba(0, 10, 30, 0.85)
-      );
+      background: linear-gradient(180deg, rgba(0, 10, 30, 0.65), rgba(0, 10, 30, 0.85));
       z-index: -1;
     }
     
@@ -166,26 +168,13 @@
       color: #cfe0ff;
     }
     
-    /* Mobile */
     @media (max-width: 768px) {
-      nav {
-        padding: 16px 24px;
-      }
-      
-      .logo {
-        font-size: 1.2rem;
-      }
-      
-      .nav-links {
-        gap: 20px;
-      }
-      
-      .nav-links a {
-        font-size: 0.9rem;
-      }
+      nav { padding: 16px 24px; }
+      .logo { font-size: 1.2rem; }
+      .nav-links { gap: 20px; }
+      .nav-links a { font-size: 0.9rem; }
     }
 
-    /* Resto do CSS das outras seções... */
     .about-product {
       background: #000;
       color: #fff;
@@ -304,24 +293,10 @@
     }
 
     @media (max-width: 768px) {
-      .about-product {
-        padding: 60px 20px;
-      }
-      
-      .product-hero {
-        grid-template-columns: 1fr;
-        gap: 40px;
-        margin-bottom: 60px;
-      }
-      
-      .product-hero .product-image {
-        order: 2;
-      }
-      
-      .cards-grid {
-        grid-template-columns: 1fr;
-        gap: 24px;
-      }
+      .about-product { padding: 60px 20px; }
+      .product-hero { grid-template-columns: 1fr; gap: 40px; margin-bottom: 60px; }
+      .product-hero .product-image { order: 2; }
+      .cards-grid { grid-template-columns: 1fr; gap: 24px; }
     }
 
     .faqs-section {
@@ -401,22 +376,10 @@
     }
 
     @media (max-width: 768px) {
-      .faqs-section {
-        padding: 60px 20px;
-      }
-      
-      .faqs-title {
-        margin-bottom: 40px;
-      }
-      
-      .faq-question {
-        padding: 20px 0;
-        font-size: 1.1rem;
-      }
-      
-      .faq-icon {
-        font-size: 1.3rem;
-      }
+      .faqs-section { padding: 60px 20px; }
+      .faqs-title { margin-bottom: 40px; }
+      .faq-question { padding: 20px 0; font-size: 1.1rem; }
+      .faq-icon { font-size: 1.3rem; }
     }
   </style>
 </head>
@@ -429,22 +392,12 @@
     </ul>
   </nav>
 
+  <div class="video-cover" id="video-cover"></div>
   <div class="background">
-    <video
-      id="bg-video"
-      muted
-      loop
-      playsinline
-      preload="auto"
-      autoplay
-      disableRemotePlayback
-      x-webkit-airplay="deny"
-      webkit-playsinline
-    >
+    <video id="bg-video" muted loop playsinline preload="auto" autoplay webkit-playsinline>
       <source src="homesyss.gif.mp4" type="video/mp4">
     </video>
   </div>
-  
   <div class="overlay"></div>
   
   <main class="container">
@@ -578,99 +531,21 @@
   </section>
 
   <script>
-    // SOLUÇÃO DEFINITIVA - Mobile Safari compatível
-    const video = document.getElementById('bg-video');
-    
-    // Configurações obrigatórias para Safari iOS
-    video.muted = true;
-    video.volume = 0;
-    video.defaultMuted = true;
-    video.playsInline = true;
-    video.setAttribute('webkit-playsinline', '');
-    video.setAttribute('playsinline', '');
-    
-    // Remove controles completamente
-    video.controls = false;
-    video.removeAttribute('controls');
-    
-    // Tentativas de play
-    let attempts = 0;
-    const maxAttempts = 200;
-    
-    function tryPlay() {
-      if (attempts >= maxAttempts) return;
-      attempts++;
-      
-      const promise = video.play();
-      
-      if (promise !== undefined) {
-        promise.then(() => {
-          console.log('Video tocando');
-        }).catch(() => {
-          setTimeout(tryPlay, 30);
-        });
-      }
-    }
-    
-    // Eventos para tentar tocar
-    video.addEventListener('loadedmetadata', tryPlay);
-    video.addEventListener('loadeddata', tryPlay);  
-    video.addEventListener('canplay', tryPlay);
-    video.addEventListener('canplaythrough', tryPlay);
-    
-    // Tenta imediatamente
-    if (video.readyState >= 2) {
-      tryPlay();
-    }
-    
-    // Timeout para tentar de novo
-    setTimeout(tryPlay, 100);
-    setTimeout(tryPlay, 300);
-    setTimeout(tryPlay, 500);
-    
-    // Quando página ficar visível
-    document.addEventListener('visibilitychange', () => {
-      if (!document.hidden && video.paused) {
-        tryPlay();
-      }
-    });
-    
-    // Fallback: primeiro toque/scroll na página
-    let firstInteraction = false;
-    const handleInteraction = () => {
-      if (!firstInteraction && video.paused) {
-        firstInteraction = true;
-        tryPlay();
-      }
-    };
-    
-    ['touchstart', 'touchend', 'click', 'scroll', 'mousemove'].forEach(event => {
-      document.addEventListener(event, handleInteraction, { once: true, passive: true });
-    });
-    
-    // Loop infinito
-    video.addEventListener('ended', () => {
-      video.currentTime = 0;
-      tryPlay();
-    });
-    
-    // Se pausar sem querer, tenta tocar de novo
-    video.addEventListener('pause', () => {
-      if (!video.ended && firstInteraction) {
-        setTimeout(() => {
-          if (video.paused) tryPlay();
-        }, 100);
-      }
-    });
-    
-    // FAQ
-    document.querySelectorAll('.faq-item').forEach(item => {
-      item.querySelector('.faq-question').addEventListener('click', () => {
-        const isActive = item.classList.contains('active');
-        document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
-        if (!isActive) item.classList.add('active');
-      });
-    });
+    (function(){
+      const v=document.getElementById('bg-video'),c=document.getElementById('video-cover');
+      if(!v)return;
+      v.muted=true;v.volume=0;v.defaultMuted=true;v.playsInline=true;
+      v.setAttribute('muted','');v.setAttribute('playsinline','');v.setAttribute('webkit-playsinline','');
+      v.controls=false;
+      let a=0;
+      function p(){if(a++>300)return;const r=v.play();if(r!==undefined){r.then(()=>{if(c){c.classList.add('loaded');setTimeout(()=>c.remove(),500)}}).catch(()=>setTimeout(p,20))}}
+      v.addEventListener('loadedmetadata',p);v.addEventListener('loadeddata',p);v.addEventListener('canplay',p);v.addEventListener('canplaythrough',p);
+      if(v.readyState>=2)p();
+      setTimeout(p,50);setTimeout(p,100);setTimeout(p,200);setTimeout(p,400);setTimeout(p,600);setTimeout(p,1000);
+      v.addEventListener('ended',()=>{v.currentTime=0;p()});
+      v.addEventListener('pause',()=>{if(!v.ended)setTimeout(()=>{if(v.paused)p()},50)});
+    })();
+    document.querySelectorAll('.faq-item').forEach(item=>{item.querySelector('.faq-question').addEventListener('click',()=>{const isActive=item.classList.contains('active');document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('active'));if(!isActive)item.classList.add('active')})});
   </script>
 </body>
 </html>
