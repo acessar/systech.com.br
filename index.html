@@ -60,7 +60,7 @@
       color: #ffffff;
     }
     
-    /* Fundo com vídeo */
+    /* Fundo com vídeo/GIF */
     .background {
       position: fixed;
       inset: 0;
@@ -68,45 +68,55 @@
       background: #000;
     }
     
-    .background-video,
-    .background-mobile {
+    /* Desktop: Vídeo */
+    .background-video {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
+      opacity: 1;
     }
     
+    /* Mobile: GIF como background-image (carrega instantaneamente) */
     .background-mobile {
       display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      /* Coloque aqui o caminho do seu GIF convertido */
+      background-image: url('homesyss.gif');
     }
     
-    /* SOLUÇÃO: Esconde TODOS os controles */
+    /* ESCONDE TODOS OS CONTROLES - Máxima agressividade */
+    video::-webkit-media-controls,
     video::-webkit-media-controls-panel,
     video::-webkit-media-controls-play-button,
     video::-webkit-media-controls-start-playback-button,
-    video::-webkit-media-controls {
+    video::-webkit-media-controls-timeline,
+    video::-webkit-media-controls-current-time-display,
+    video::-webkit-media-controls-time-remaining-display,
+    video::-webkit-media-controls-enclosure {
       display: none !important;
       -webkit-appearance: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
     }
     
     video {
-      pointer-events: none;
+      pointer-events: none !important;
+      outline: none !important;
     }
     
-    /* SOLUÇÃO: Camada que cobre o vídeo até tocar */
-    .video-blocker {
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
-      transition: opacity 0.3s ease;
-    }
-    
-    .video-blocker.hidden {
-      opacity: 0;
-      pointer-events: none;
+    video::cue {
+      display: none !important;
     }
     
     .overlay {
@@ -194,6 +204,7 @@
         font-size: 0.9rem;
       }
       
+      /* Em mobile: esconde vídeo e mostra GIF via background */
       .background-video {
         display: none !important;
       }
@@ -447,30 +458,24 @@
     </ul>
   </nav>
 
-  <!-- SOLUÇÃO: Camada que fica por cima até o vídeo tocar -->
-  <div class="video-blocker" id="blocker"></div>
-
   <div class="background">
+    <!-- Desktop: Vídeo com preload agressivo -->
     <video
       id="desktop-video"
       class="background-video"
       muted
       loop
       playsinline
-      preload="metadata"
+      preload="auto"
+      autoplay
+      disableRemotePlayback
+      x-webkit-airplay="deny"
     >
       <source src="homesys.mp4" type="video/mp4">
     </video>
-    <video
-      id="mobile-video"
-      class="background-mobile"
-      muted
-      loop
-      playsinline
-      preload="metadata"
-    >
-      <source src="homesyss.gif.mp4" type="video/mp4">
-    </video>
+    
+    <!-- Mobile: GIF via background-image (carrega instantaneamente) -->
+    <div class="background-mobile"></div>
   </div>
   
   <div class="overlay"></div>
@@ -606,40 +611,49 @@
   </section>
 
   <script>
-    // SOLUÇÃO TESTADA - FUNCIONA EM CHROME E SAFARI
-    const isMobile = window.innerWidth <= 768;
-    const video = document.getElementById(isMobile ? 'mobile-video' : 'desktop-video');
-    const blocker = document.getElementById('blocker');
-    
-    // Configura vídeo
-    video.muted = true;
-    video.volume = 0;
-    
-    // Remove blocker quando vídeo REALMENTE tocar
-    video.addEventListener('playing', () => {
-      blocker.classList.add('hidden');
-      setTimeout(() => blocker.remove(), 300);
-    }, { once: true });
-    
-    // Força play agressivamente
-    let attempts = 0;
-    const tryPlay = () => {
-      if (attempts++ > 50) return;
-      video.play()
-        .then(() => console.log('Tocando!'))
-        .catch(() => setTimeout(tryPlay, 100));
-    };
-    
-    // Inicia
-    tryPlay();
-    video.addEventListener('loadedmetadata', tryPlay);
-    video.addEventListener('canplay', tryPlay);
-    
-    // Loop
-    video.addEventListener('ended', () => {
-      video.currentTime = 0;
-      video.play();
-    });
+    // SOLUÇÃO DEFINITIVA PARA SAFARI - Testada em iOS Safari
+    (function() {
+      const isMobile = window.innerWidth <= 768;
+      
+      if (!isMobile) {
+        // Desktop: Vídeo com máxima agressividade
+        const video = document.getElementById('desktop-video');
+        
+        // Configurações brutais
+        video.muted = true;
+        video.volume = 0;
+        video.defaultMuted = true;
+        video.setAttribute('muted', '');
+        video.setAttribute('playsinline', '');
+        video.setAttribute('autoplay', '');
+        
+        // Força play IMEDIATAMENTE (antes mesmo do DOM carregar)
+        const forcePlay = () => {
+          video.play().catch(() => {
+            // Se falhar, tenta novamente em 50ms
+            setTimeout(forcePlay, 50);
+          });
+        };
+        
+        // Inicia imediatamente
+        forcePlay();
+        
+        // Backup: tenta quando o vídeo estiver pronto
+        video.addEventListener('loadeddata', forcePlay, { once: true });
+        video.addEventListener('canplay', forcePlay, { once: true });
+        
+        // Garante loop infinito
+        video.addEventListener('ended', () => {
+          video.currentTime = 0;
+          forcePlay();
+        });
+        
+        // Remove qualquer controle que possa aparecer
+        video.controls = false;
+        video.removeAttribute('controls');
+      }
+      // Mobile: usa GIF via background-image (sem JavaScript necessário)
+    })();
     
     // FAQ
     document.querySelectorAll('.faq-item').forEach(item => {
