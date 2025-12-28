@@ -301,48 +301,133 @@ document.addEventListener('keydown', (e) => {
 
 // Função para abrir o chatbot
 function openChatbot() {
-  if (window.Chatling) {
+  if (window.Chatling && typeof window.Chatling.open === 'function') {
     window.Chatling.open();
-  } else {
-    console.error('Chatling object not found. Make sure the embed script is loaded.');
-    alert('O chatbot não está disponível no momento. Tente novamente mais tarde.');
+    return true;
   }
+  
+  // Tentar métodos alternativos
+  if (window.Chatling && typeof window.Chatling.show === 'function') {
+    window.Chatling.show();
+    return true;
+  }
+  
+  // Tentar encontrar e clicar no botão do chatbot
+  const chatButton = document.querySelector('[data-id="3553371319"]') || 
+                     document.querySelector('.chatling-widget-button') ||
+                     document.querySelector('#chtl-script')?.nextElementSibling?.querySelector('button');
+  
+  if (chatButton) {
+    chatButton.click();
+    return true;
+  }
+  
+  return false;
 }
 
+// Função auxiliar para aguardar o Chatling carregar
+function waitForChatling(callback, maxAttempts = 100) {
+  let attempts = 0;
+  const checkInterval = setInterval(() => {
+    attempts++;
+    if (window.Chatling && typeof window.Chatling.open === 'function') {
+      clearInterval(checkInterval);
+      callback();
+    } else if (attempts >= maxAttempts) {
+      clearInterval(checkInterval);
+      // Tentar abrir mesmo sem a API disponível (pode funcionar se o botão já estiver renderizado)
+      if (callback) callback();
+    }
+  }, 100);
+}
 
-
-// Eventos para todos os botões "Solicitar demonstração"
-document.addEventListener('DOMContentLoaded', function() {
-  // Função auxiliar para aguardar o Chatling carregar
-  function waitForChatling(callback, maxAttempts = 50) {
-    let attempts = 0;
-    const checkInterval = setInterval(() => {
-      attempts++;
-      if (window.Chatling) {
-        clearInterval(checkInterval);
-        callback();
-      } else if (attempts >= maxAttempts) {
-        clearInterval(checkInterval);
-        console.warn('Chatling não carregou após várias tentativas');
-        alert('O chatbot não está disponível no momento. Tente novamente mais tarde.');
-      }
-    }, 100);
-  }
-
-  // Adicionar eventos a todos os links "Solicitar demonstração"
-  const solicitarLinks = document.querySelectorAll('a.cta, a[href="#solicitar"], a[href="produto.html"]');
-  solicitarLinks.forEach(link => {
-    link.addEventListener('click', function(e) {
+// Configurar eventos para todos os botões "Solicitar demonstração"
+function setupChatbotButtons() {
+  // Listener específico para o link do menu de navegação
+  const navSolicitarLink = document.getElementById('nav-solicitar-demo');
+  if (navSolicitarLink && !navSolicitarLink.dataset.chatbotListenerAdded) {
+    navSolicitarLink.dataset.chatbotListenerAdded = 'true';
+    navSolicitarLink.addEventListener('click', function(e) {
       e.preventDefault();
+      e.stopPropagation();
+      
+      if (openChatbot()) {
+        return;
+      }
+      
       waitForChatling(() => {
-        if (window.Chatling) {
-          window.Chatling.open();
-        } else {
-          console.error('Chatling object not found. Make sure the embed script is loaded.');
-          alert('O chatbot não está disponível no momento. Tente novamente mais tarde.');
+        if (!openChatbot()) {
+          console.warn('Não foi possível abrir o chatbot. Tentando novamente...');
+          setTimeout(() => {
+            if (!openChatbot()) {
+              console.error('Chatbot não está disponível no momento.');
+            }
+          }, 500);
         }
       });
     });
+  }
+  
+  // Buscar todos os links com classe "cta"
+  const allCtaLinks = document.querySelectorAll('a.cta');
+  
+  allCtaLinks.forEach(link => {
+    const href = link.getAttribute('href');
+    const text = link.textContent.trim();
+    
+    // Verificar se é um link "Solicitar demonstração"
+    if (href === '#solicitar' || text.includes('Solicitar demonstração')) {
+      // Verificar se já tem um listener (evitar duplicação)
+      if (link.dataset.chatbotListenerAdded) {
+        return;
+      }
+      
+      // Marcar que já adicionamos o listener
+      link.dataset.chatbotListenerAdded = 'true';
+      
+      // Adicionar listener
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Tentar abrir imediatamente se já estiver disponível
+        if (openChatbot()) {
+          return;
+        }
+        
+        // Caso contrário, aguardar o Chatling carregar
+        waitForChatling(() => {
+          if (!openChatbot()) {
+            console.warn('Não foi possível abrir o chatbot. Tentando novamente...');
+            setTimeout(() => {
+              if (!openChatbot()) {
+                console.error('Chatbot não está disponível no momento.');
+              }
+            }, 500);
+          }
+        });
+      });
+    }
   });
+}
 
-});
+// Executar quando DOM estiver pronto
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', setupChatbotButtons);
+} else {
+  setupChatbotButtons();
+}
+
+// Também executar após um delay para garantir que o script do Chatling carregou
+setTimeout(setupChatbotButtons, 1000);
+
+// Listener para quando o script do Chatling carregar
+const chatlingScript = document.getElementById('chtl-script');
+if (chatlingScript) {
+  chatlingScript.addEventListener('load', function() {
+    // Aguardar um pouco mais para garantir que a API está disponível
+    setTimeout(() => {
+      setupChatbotButtons();
+    }, 500);
+  });
+}
