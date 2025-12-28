@@ -1261,3 +1261,111 @@ p {
   .faq-question { padding: 20px 0; font-size: 1.1rem; }
   .faq-icon { font-size: 1.3rem; }
 }
+
+/* ========================================
+   CUSTOMIZAÇÃO DO CHATBOT CHATLING
+   ======================================== */
+/* Botão do chatbot no canto inferior */
+#chtl-script ~ div iframe,
+.chatling-widget-button,
+[data-id="3553371319"] ~ div,
+div[id*="chatling"],
+div[class*="chatling"],
+iframe[src*="chatling"] {
+  filter: drop-shadow(0 4px 16px rgba(107, 159, 255, 0.3));
+}
+
+/* Customização do botão do chatbot */
+.chatling-widget-button,
+[class*="chatling-button"],
+[class*="chatling-widget"],
+div[id*="chatling-widget"] button,
+iframe[src*="chatling"] {
+  background: rgba(107, 159, 255, 0.15) !important;
+  backdrop-filter: blur(12px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
+  border: 1px solid rgba(107, 159, 255, 0.3) !important;
+  border-radius: 50% !important;
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(107, 159, 255, 0.2) inset,
+    0 0 30px rgba(107, 159, 255, 0.2) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.chatling-widget-button:hover,
+[class*="chatling-button"]:hover,
+[class*="chatling-widget"]:hover,
+div[id*="chatling-widget"] button:hover {
+  background: rgba(107, 159, 255, 0.25) !important;
+  border-color: rgba(107, 159, 255, 0.5) !important;
+  box-shadow: 
+    0 8px 32px rgba(107, 159, 255, 0.4),
+    0 0 0 2px rgba(107, 159, 255, 0.3) inset,
+    0 0 40px rgba(107, 159, 255, 0.3) !important;
+  transform: translateY(-2px) scale(1.05) !important;
+}
+
+/* Ícone do chatbot dentro do botão */
+.chatling-widget-button svg,
+[class*="chatling-button"] svg,
+.chatling-widget-button path,
+[class*="chatling-button"] path {
+  fill: #dbe6ff !important;
+  filter: drop-shadow(0 0 8px rgba(107, 159, 255, 0.5)) !important;
+  transition: all 0.3s ease !important;
+}
+
+.chatling-widget-button:hover svg,
+[class*="chatling-button"]:hover svg,
+.chatling-widget-button:hover path,
+[class*="chatling-button"]:hover path {
+  fill: #ffffff !important;
+  filter: drop-shadow(0 0 12px rgba(107, 159, 255, 0.8)) !important;
+}
+
+/* Pulso de energia sutil no botão */
+@keyframes chatbotPulse {
+  0%, 100% {
+    box-shadow: 
+      0 4px 20px rgba(0, 0, 0, 0.4),
+      0 0 0 1px rgba(107, 159, 255, 0.2) inset,
+      0 0 30px rgba(107, 159, 255, 0.2);
+  }
+  50% {
+    box-shadow: 
+      0 4px 20px rgba(0, 0, 0, 0.4),
+      0 0 0 1px rgba(107, 159, 255, 0.3) inset,
+      0 0 40px rgba(107, 159, 255, 0.3);
+  }
+}
+
+.chatling-widget-button,
+[class*="chatling-button"] {
+  animation: chatbotPulse 4s ease-in-out infinite !important;
+}
+
+/* Estilo do widget/iframe quando aberto */
+.chatling-widget-container,
+[class*="chatling-container"],
+iframe[src*="chatling"] {
+  border-radius: 16px !important;
+  border: 1px solid rgba(107, 159, 255, 0.2) !important;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(107, 159, 255, 0.15) inset !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+}
+
+/* Badge de notificação (se houver) */
+.chatling-widget-badge,
+[class*="chatling-badge"],
+[class*="chatling-notification"] {
+  background: linear-gradient(135deg, #6b9fff, #4a7fd9) !important;
+  color: #ffffff !important;
+  box-shadow: 
+    0 2px 8px rgba(107, 159, 255, 0.4),
+    0 0 12px rgba(107, 159, 255, 0.3) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}

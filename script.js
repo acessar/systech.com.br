@@ -428,6 +428,114 @@ if (chatlingScript) {
     // Aguardar um pouco mais para garantir que a API está disponível
     setTimeout(() => {
       setupChatbotButtons();
+      customizeChatbotWidget();
     }, 500);
   });
+}
+
+// Função para customizar o widget do Chatling
+function customizeChatbotWidget() {
+  // Tentar encontrar e estilizar o botão do widget
+  function applyChatbotStyles() {
+    // Buscar por diversos seletores possíveis do widget
+    const selectors = [
+      '.chatling-widget-button',
+      '[class*="chatling-button"]',
+      '[class*="chatling-widget"]',
+      '[id*="chatling"]',
+      'iframe[src*="chatling"]'
+    ];
+
+    selectors.forEach(selector => {
+      try {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach(el => {
+          // Aplicar estilos inline se necessário
+          if (el.tagName === 'BUTTON' || el.classList.toString().includes('button')) {
+            el.style.cssText += `
+              background: rgba(107, 159, 255, 0.15) !important;
+              backdrop-filter: blur(12px) saturate(180%) !important;
+              -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
+              border: 1px solid rgba(107, 159, 255, 0.3) !important;
+              border-radius: 50% !important;
+              box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(107, 159, 255, 0.2) inset, 0 0 30px rgba(107, 159, 255, 0.2) !important;
+            `;
+            
+            // Estilizar SVG/ícone dentro do botão
+            const svg = el.querySelector('svg');
+            if (svg) {
+              svg.style.cssText += `
+                fill: #dbe6ff !important;
+                filter: drop-shadow(0 0 8px rgba(107, 159, 255, 0.5)) !important;
+              `;
+              
+              const paths = svg.querySelectorAll('path');
+              paths.forEach(path => {
+                path.style.cssText += `
+                  fill: #dbe6ff !important;
+                `;
+              });
+            }
+          }
+          
+          // Estilizar iframe do widget
+          if (el.tagName === 'IFRAME') {
+            el.style.cssText += `
+              border-radius: 16px !important;
+              border: 1px solid rgba(107, 159, 255, 0.2) !important;
+              box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(107, 159, 255, 0.15) inset !important;
+            `;
+          }
+        });
+      } catch (e) {
+        // Ignorar erros de seletores inválidos
+      }
+    });
+  }
+
+  // Aplicar estilos imediatamente
+  applyChatbotStyles();
+
+  // Usar MutationObserver para detectar quando o widget é adicionado
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.addedNodes.length) {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === 1) { // Element node
+            if (node.classList?.toString().includes('chatling') || 
+                node.id?.includes('chatling') ||
+                node.tagName === 'IFRAME' && node.src?.includes('chatling')) {
+              setTimeout(applyChatbotStyles, 100);
+            }
+          }
+        });
+      }
+    });
+  });
+
+  // Observar mudanças no body
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+
+  // Reaplicar estilos periodicamente para garantir que não sejam sobrescritos
+  const interval = setInterval(() => {
+    applyChatbotStyles();
+  }, 2000);
+
+  // Parar após 30 segundos (tempo suficiente para o widget carregar)
+  setTimeout(() => {
+    clearInterval(interval);
+    observer.disconnect();
+  }, 30000);
+}
+
+// Tentar customizar quando o DOM estiver pronto
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(customizeChatbotWidget, 1000);
+  });
+} else {
+  setTimeout(customizeChatbotWidget, 1000);
 }
