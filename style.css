@@ -412,10 +412,11 @@ p {
 
 .cta-container {
   display: flex;
-  gap: 16px;
+  gap: 24px;
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
+  width: 100%;
 }
 
 .cta {
@@ -439,14 +440,16 @@ p {
 }
 
 .cta-secondary {
-  background: transparent;
+  background: transparent !important;
   border: 2px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: none !important;
 }
 
 .cta-secondary:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.5);
+  background: transparent !important;
+  border-color: rgba(255, 255, 255, 0.6);
   border-width: 2px;
+  transform: translateY(-2px);
 }
 
 .watermark {
