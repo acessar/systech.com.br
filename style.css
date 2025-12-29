@@ -410,6 +410,14 @@ p {
   margin-bottom: 40px;
 }
 
+.cta-container {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
 .cta {
   padding: 14px 36px;
   font-size: 1rem;
@@ -428,6 +436,17 @@ p {
 .cta:hover {
   background: rgba(200, 220, 255, 0.3);
   transform: translateY(-2px);
+}
+
+.cta-secondary {
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.cta-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+  border-width: 2px;
 }
 
 .watermark {
