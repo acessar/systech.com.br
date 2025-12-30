@@ -313,7 +313,7 @@ function openChatbot() {
   }
   
   // Tentar encontrar e clicar no botão do chatbot
-  const chatButton = document.querySelector('[data-id="3553371319"]') || 
+  const chatButton = document.querySelector('[data-id="7934253836"]') || 
                      document.querySelector('.chatling-widget-button') ||
                      document.querySelector('#chtl-script')?.nextElementSibling?.querySelector('button');
   
