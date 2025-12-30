@@ -1559,3 +1559,273 @@ iframe[src*="chatling"] {
     0 0 12px rgba(107, 159, 255, 0.3) !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
 }
+
+/* ========================================
+   ROBÔ ANIMADO COM SISTEMA DE FALA
+   ======================================== */
+.robot-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.robot-wrapper {
+  width: 80px;
+  height: 96px;
+  opacity: 0;
+  transform: translateY(100px) scale(0.8);
+  animation: robotSlideUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s forwards;
+  filter: drop-shadow(0 0 16px rgba(107, 159, 255, 0.4));
+  pointer-events: auto;
+  cursor: pointer;
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.robot-wrapper:hover {
+  transform: scale(1.1) translateY(-4px);
+  filter: drop-shadow(0 0 24px rgba(107, 159, 255, 0.6));
+}
+
+.robot-wrapper:active {
+  transform: scale(1.05) translateY(-2px);
+}
+
+@keyframes robotSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(100px) scale(0.8);
+  }
+  60% {
+    transform: translateY(-8px) scale(1.05);
+  }
+  80% {
+    transform: translateY(4px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.robot-svg {
+  width: 100%;
+  height: 100%;
+  animation: robotFloatIdle 3s ease-in-out 1.5s infinite;
+}
+
+@keyframes robotFloatIdle {
+  0%, 100% { 
+    transform: translateY(0) rotate(0deg); 
+  }
+  25% { 
+    transform: translateY(-6px) rotate(-1deg); 
+  }
+  50% { 
+    transform: translateY(-8px) rotate(0deg); 
+  }
+  75% { 
+    transform: translateY(-6px) rotate(1deg); 
+  }
+}
+
+/* Balão de Fala */
+.robot-speech-bubble {
+  position: relative;
+  background: rgba(10, 14, 39, 0.95);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1.5px solid rgba(107, 159, 255, 0.4);
+  border-radius: 16px;
+  padding: 14px 18px;
+  max-width: 280px;
+  min-width: 120px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(107, 159, 255, 0.15) inset,
+    0 0 40px rgba(107, 159, 255, 0.2);
+  opacity: 0;
+  transform: translateY(20px) scale(0.9);
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.robot-speech-bubble.active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+  animation: speechBubblePulse 2s ease-in-out infinite;
+}
+
+@keyframes speechBubblePulse {
+  0%, 100% {
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.5),
+      0 0 0 1px rgba(107, 159, 255, 0.15) inset,
+      0 0 40px rgba(107, 159, 255, 0.2);
+  }
+  50% {
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.5),
+      0 0 0 1px rgba(107, 159, 255, 0.25) inset,
+      0 0 50px rgba(107, 159, 255, 0.3);
+  }
+}
+
+.speech-bubble-content {
+  position: relative;
+  z-index: 1;
+}
+
+.speech-text {
+  display: block;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #dbe6ff;
+  font-weight: 500;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  word-wrap: break-word;
+  animation: textTyping 0.5s ease-out;
+}
+
+@keyframes textTyping {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.speech-bubble-tail {
+  position: absolute;
+  bottom: -8px;
+  right: 24px;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid rgba(107, 159, 255, 0.4);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.speech-bubble-tail::after {
+  content: '';
+  position: absolute;
+  bottom: 1px;
+  left: -9px;
+  width: 0;
+  height: 0;
+  border-left: 9px solid transparent;
+  border-right: 9px solid transparent;
+  border-top: 9px solid rgba(10, 14, 39, 0.95);
+}
+
+.speech-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: rgba(107, 159, 255, 0.15);
+  border-radius: 50%;
+  color: #dbe6ff;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 2;
+  opacity: 0.7;
+}
+
+.speech-close:hover {
+  background: rgba(107, 159, 255, 0.3);
+  color: #ffffff;
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.speech-close:active {
+  transform: scale(0.95);
+}
+
+/* Efeito de brilho sutil no balão */
+.robot-speech-bubble::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  right: -1px;
+  bottom: -1px;
+  background: linear-gradient(
+    135deg,
+    rgba(107, 159, 255, 0.3) 0%,
+    rgba(107, 159, 255, 0.1) 50%,
+    rgba(107, 159, 255, 0.3) 100%
+  );
+  border-radius: 16px;
+  z-index: -1;
+  opacity: 0;
+  animation: borderGlow 3s ease-in-out infinite;
+}
+
+@keyframes borderGlow {
+  0%, 100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .robot-container {
+    bottom: 20px;
+    right: 20px;
+  }
+
+  .robot-wrapper {
+    width: 64px;
+    height: 77px;
+  }
+
+  .robot-speech-bubble {
+    max-width: 240px;
+    padding: 12px 16px;
+    font-size: 0.9rem;
+  }
+
+  .speech-bubble-tail {
+    right: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .robot-container {
+    bottom: 16px;
+    right: 16px;
+  }
+
+  .robot-wrapper {
+    width: 56px;
+    height: 67px;
+  }
+
+  .robot-speech-bubble {
+    max-width: 200px;
+    padding: 10px 14px;
+    font-size: 0.85rem;
+  }
+}

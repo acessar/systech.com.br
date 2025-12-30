@@ -539,3 +539,367 @@ if (document.readyState === 'loading') {
 } else {
   setTimeout(customizeChatbotWidget, 1000);
 }
+
+/* ========================================
+   ROBÔ ANIMADO COM SISTEMA DE FALA
+   ======================================== */
+(function() {
+  'use strict';
+
+  const robotContainer = document.getElementById('robotContainer');
+  const robotWrapper = document.getElementById('robotWrapper');
+  const speechBubble = document.getElementById('robotSpeechBubble');
+  const speechContent = document.getElementById('speechBubbleContent');
+  const speechClose = document.getElementById('speechClose');
+
+  if (!robotContainer || !robotWrapper || !speechBubble || !speechContent) {
+    return;
+  }
+
+  // Estado do robô
+  let isSpeechVisible = false;
+  let speechTimeout = null;
+  let currentMessage = '';
+  let sequenceTimeout = null;
+  let isSequenceRunning = false;
+
+  // Mensagens da sequência automática
+  const initialMessage = 'Olá';
+  const secondMessage = 'Venha fazer parte do alto nível do mercado';
+  const thirdMessage = 'Quem não é visto não é lembrado';
+  
+  // Referência ao braço do robô para animação de aceno (será buscado quando necessário)
+  let robotArmLeft = null;
+  let waveAnimation = null;
+  
+  // Buscar elementos após DOM carregar
+  function initRobotElements() {
+    robotArmLeft = document.querySelector('.robot-arm-left');
+    waveAnimation = document.getElementById('waveAnimation');
+  }
+  
+  // Inicializar elementos
+  initRobotElements();
+
+  // Mensagens padrão (para quando clicar no robô)
+  const defaultMessages = [
+    secondMessage,
+    thirdMessage,
+    'Transforme seu negócio com IA de ponta! 💡'
+  ];
+
+  // Função para ativar animação de aceno
+  function triggerWaveAnimation() {
+    // Garantir que os elementos foram buscados
+    if (!waveAnimation || !robotArmLeft) {
+      initRobotElements();
+    }
+    
+    if (waveAnimation) {
+      // Reiniciar animação SVG
+      try {
+        waveAnimation.beginElement();
+      } catch (e) {
+        // Fallback se beginElement não funcionar
+        waveAnimation.setAttribute('begin', '0s');
+        setTimeout(() => {
+          waveAnimation.removeAttribute('begin');
+        }, 100);
+      }
+    } else if (robotArmLeft) {
+      // Fallback: tentar encontrar a animação dentro do grupo
+      const animateElement = robotArmLeft.querySelector('animateTransform');
+      if (animateElement) {
+        try {
+          animateElement.beginElement();
+        } catch (e) {
+          animateElement.setAttribute('begin', '0s');
+        }
+      }
+    }
+  }
+
+  // Função para exibir mensagem
+  function showMessage(message, duration = 5000, triggerWave = false) {
+    if (!message) return;
+
+    currentMessage = message;
+    
+    // Limpar timeout anterior se existir
+    if (speechTimeout) {
+      clearTimeout(speechTimeout);
+    }
+
+    // Ativar animação de aceno se for a mensagem "Olá"
+    if (triggerWave || message === initialMessage) {
+      triggerWaveAnimation();
+    }
+
+    // Atualizar conteúdo
+    speechContent.innerHTML = `<span class="speech-text">${message}</span>`;
+
+    // Mostrar balão com animação GSAP se disponível
+    if (typeof gsap !== 'undefined') {
+      speechBubble.classList.add('active');
+      
+      gsap.fromTo(speechBubble,
+        {
+          opacity: 0,
+          scale: 0.9,
+          y: 20
+        },
+        {
+          opacity: 1,
+          scale: 1,
+          y: 0,
+          duration: 0.4,
+          ease: 'back.out(1.7)'
+        }
+      );
+
+      // Animar texto
+      gsap.fromTo(speechContent.querySelector('.speech-text'),
+        {
+          opacity: 0,
+          y: 8
+        },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.3,
+          delay: 0.2,
+          ease: 'power2.out'
+        }
+      );
+    } else {
+      // Fallback sem GSAP
+      speechBubble.classList.add('active');
+    }
+
+    isSpeechVisible = true;
+
+    // Auto-fechar após duração especificada (apenas se não estiver na sequência automática)
+    if (duration > 0 && !isSequenceRunning) {
+      speechTimeout = setTimeout(() => {
+        hideMessage(true); // skipSequence = true para não interferir
+      }, duration);
+    }
+  }
+
+  // Função para esconder mensagem
+  function hideMessage(skipSequence = false) {
+    if (!isSpeechVisible) return;
+
+    if (typeof gsap !== 'undefined') {
+      gsap.to(speechBubble, {
+        opacity: 0,
+        scale: 0.9,
+        y: 20,
+        duration: 0.3,
+        ease: 'power2.in',
+        onComplete: () => {
+          speechBubble.classList.remove('active');
+          if (!skipSequence && isSequenceRunning) {
+            // Continuar sequência após esconder
+            continueSequence();
+          }
+        }
+      });
+    } else {
+      speechBubble.classList.remove('active');
+      if (!skipSequence && isSequenceRunning) {
+        setTimeout(() => continueSequence(), 300);
+      }
+    }
+
+    isSpeechVisible = false;
+    currentMessage = '';
+
+    if (speechTimeout) {
+      clearTimeout(speechTimeout);
+      speechTimeout = null;
+    }
+  }
+
+  // Função para continuar a sequência automática
+  let sequenceStep = 0;
+  function continueSequence() {
+    if (!isSequenceRunning) return;
+
+    // Limpar timeout anterior
+    if (sequenceTimeout) {
+      clearTimeout(sequenceTimeout);
+    }
+
+    // Sequência: Olá (curto) → Segunda (menos tempo) → Terceira (fim)
+    if (sequenceStep === 0) {
+      // Passo 1: Olá (curto - 2.5 segundos) com animação de aceno
+      showMessage(initialMessage, 0, true); // triggerWave = true
+      sequenceTimeout = setTimeout(() => {
+        hideMessage();
+        sequenceStep = 1;
+      }, 2500);
+    } else if (sequenceStep === 1) {
+      // Passo 2: Segunda mensagem (menos tempo - 4 segundos)
+      showMessage(secondMessage, 0);
+      sequenceTimeout = setTimeout(() => {
+        hideMessage();
+        sequenceStep = 2;
+      }, 4000);
+    } else if (sequenceStep === 2) {
+      // Passo 3: Terceira mensagem (5 segundos) - fim da sequência
+      showMessage(thirdMessage, 0);
+      sequenceTimeout = setTimeout(() => {
+        hideMessage();
+        // Parar sequência após a terceira mensagem
+        stopSequence();
+      }, 5000);
+    }
+  }
+  
+  // Função para avançar para a próxima mensagem (usado no clique)
+  function nextMessage() {
+    if (isSequenceRunning) {
+      // Se está na sequência, avançar para o próximo passo
+      hideMessage(true); // skipSequence para não continuar automaticamente
+      sequenceStep++;
+      if (sequenceStep > 2) {
+        sequenceStep = 0; // Reiniciar do início
+        stopSequence();
+      }
+      // Continuar manualmente
+      setTimeout(() => {
+        continueSequence();
+      }, 300);
+    } else {
+      // Se não está na sequência, iniciar do passo atual
+      isSequenceRunning = true;
+      continueSequence();
+    }
+  }
+
+  // Iniciar sequência automática
+  function startSequence() {
+    if (isSequenceRunning) return;
+    
+    isSequenceRunning = true;
+    sequenceStep = 0;
+    continueSequence();
+  }
+
+  // Parar sequência automática
+  function stopSequence() {
+    isSequenceRunning = false;
+    if (sequenceTimeout) {
+      clearTimeout(sequenceTimeout);
+      sequenceTimeout = null;
+    }
+  }
+
+  // Função para adicionar mensagem (API pública)
+  window.robotSay = function(message, duration = 5000) {
+    showMessage(message, duration);
+  };
+
+  // Função para esconder mensagem (API pública)
+  window.robotHide = function() {
+    hideMessage();
+  };
+
+  // Event listeners
+  if (speechClose) {
+    speechClose.addEventListener('click', (e) => {
+      e.stopPropagation();
+      hideMessage(true); // skipSequence = true para não continuar sequência
+      stopSequence();
+    });
+  }
+
+  // Clicar no robô para avançar para a próxima mensagem
+  if (robotWrapper) {
+    robotWrapper.addEventListener('click', (e) => {
+      e.stopPropagation();
+      
+      if (isSpeechVisible) {
+        // Se está mostrando mensagem, avançar para a próxima
+        nextMessage();
+      } else {
+        // Se não está mostrando, iniciar sequência
+        if (!isSequenceRunning) {
+          startSequence();
+        } else {
+          nextMessage();
+        }
+      }
+    });
+  }
+
+  // Animações do robô ao interagir
+  if (robotWrapper && typeof gsap !== 'undefined') {
+    robotWrapper.addEventListener('mouseenter', () => {
+      gsap.to(robotWrapper, {
+        scale: 1.1,
+        y: -4,
+        duration: 0.3,
+        ease: 'power2.out'
+      });
+    });
+
+    robotWrapper.addEventListener('mouseleave', () => {
+      gsap.to(robotWrapper, {
+        scale: 1,
+        y: 0,
+        duration: 0.3,
+        ease: 'power2.out'
+      });
+    });
+  }
+
+  // Iniciar sequência automática após um delay
+  setTimeout(() => {
+    if (!isSpeechVisible) {
+      startSequence();
+    }
+  }, 2000);
+
+  // Mostrar mensagem quando o usuário rola a página
+  let scrollTimeout = null;
+  let hasShownScrollMessage = false;
+
+  window.addEventListener('scroll', () => {
+    if (hasShownScrollMessage) return;
+
+    if (scrollTimeout) {
+      clearTimeout(scrollTimeout);
+    }
+
+    scrollTimeout = setTimeout(() => {
+      if (window.scrollY > 300 && !isSpeechVisible) {
+        hasShownScrollMessage = true;
+        showMessage('Quem não é visto, não é lembrado', 5000);
+      }
+    }, 500);
+  }, { passive: true });
+
+  // Prevenir que cliques no balão fechem o balão
+  if (speechBubble) {
+    speechBubble.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+  }
+
+  // Fechar ao clicar fora (opcional)
+  document.addEventListener('click', (e) => {
+    if (isSpeechVisible && 
+        !robotContainer.contains(e.target) &&
+        !speechBubble.contains(e.target)) {
+      // Não fechar automaticamente - deixar o usuário controlar
+      // Mas se fechar manualmente, parar sequência
+      // hideMessage(true);
+      // stopSequence();
+    }
+  });
+
+  console.log('🤖 Robô animado inicializado! Use robotSay("mensagem") para fazer o robô falar.');
+})();
+

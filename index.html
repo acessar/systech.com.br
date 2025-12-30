@@ -63,7 +63,7 @@
     <div class="watermark">Sys • Automação Inteligente</div>
   </main>
 
-  
+
   <section class="about-product" id="sobre-produto">
     <div class="about-content">
       <div class="product-hero">
@@ -343,6 +343,128 @@
       </div>
     </div>
   </section>
+
+  <!-- Robô Animado com Sistema de Fala -->
+  <div class="robot-container" id="robotContainer">
+    <div class="robot-speech-bubble" id="robotSpeechBubble">
+      <div class="speech-bubble-content" id="speechBubbleContent">
+        <span class="speech-text">Olá</span>
+      </div>
+      <div class="speech-bubble-tail"></div>
+      <button class="speech-close" id="speechClose" aria-label="Fechar mensagem">×</button>
+    </div>
+    <div class="robot-wrapper" id="robotWrapper">
+      <svg viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg" class="robot-svg">
+        <!-- Antena -->
+        <circle cx="50" cy="6" r="4" fill="#6b9fff" class="antenna-light">
+          <animate attributeName="opacity" values="1;0.5;1" dur="2s" repeatCount="indefinite" />
+        </circle>
+        <rect x="48" y="8" width="4" height="12" rx="2" fill="#3a4055" />
+
+        <!-- Cabeça -->
+        <rect x="25" y="18" width="50" height="40" rx="12" fill="#1a1f3a" stroke="#6b9fff" stroke-width="1.5"
+          class="robot-head" />
+
+        <!-- Olhos -->
+        <circle cx="38" cy="35" r="6" fill="#0a0e27" />
+        <circle cx="62" cy="35" r="6" fill="#0a0e27" />
+        <circle cx="38" cy="34" r="4" fill="#6b9fff" class="eye-left">
+          <animate attributeName="opacity" values="1;0.3;1" dur="3s" repeatCount="indefinite" />
+        </circle>
+        <circle cx="62" cy="34" r="4" fill="#6b9fff" class="eye-right">
+          <animate attributeName="opacity" values="1;0.3;1" dur="3s" repeatCount="indefinite" />
+        </circle>
+        <circle cx="40" cy="32" r="1.5" fill="#fff" opacity="0.8" />
+        <circle cx="64" cy="32" r="1.5" fill="#fff" opacity="0.8" />
+
+        <!-- Boca -->
+        <path d="M40 45 Q50 50 60 45" stroke="#6b9fff" stroke-width="2" stroke-linecap="round" fill="none"
+          class="robot-mouth" />
+
+        <!-- Braço esquerdo (para acenar) -->
+        <g class="robot-arm-left" transform-origin="22 75">
+          <rect x="18" y="65" width="8" height="20" rx="4" fill="#252a45">
+            <animateTransform id="waveAnimation" attributeName="transform" type="rotate"
+              values="0 22 75; 70 22 75; 0 22 75; 70 22 75; 0 22 75" dur="0.8s" repeatCount="2" begin="indefinite" />
+          </rect>
+        </g>
+
+        <!-- Corpo -->
+        <rect x="30" y="60" width="40" height="30" rx="8" fill="#1a1f3a" stroke="#6b9fff" stroke-width="1.5"
+          class="robot-body" />
+        <rect x="40" y="66" width="20" height="18" rx="4" fill="#0a0e27" />
+
+        <!-- Indicadores do peito -->
+        <circle cx="45" cy="72" r="2" fill="#6b9fff" class="chest-indicator">
+          <animate attributeName="opacity" values="1;0.2;1" dur="1.5s" repeatCount="indefinite" />
+        </circle>
+        <circle cx="50" cy="72" r="2" fill="#4ecdc4" class="chest-indicator">
+          <animate attributeName="opacity" values="0.2;1;0.2" dur="1.5s" repeatCount="indefinite" />
+        </circle>
+        <circle cx="55" cy="72" r="2" fill="#6b9fff" class="chest-indicator">
+          <animate attributeName="opacity" values="1;0.2;1" dur="1.5s" repeatCount="indefinite" />
+        </circle>
+        <rect x="43" y="78" width="14" height="3" rx="1.5" fill="rgba(107,159,255,0.3)" />
+
+        <!-- Braço direito (fixo) -->
+        <rect x="74" y="65" width="8" height="20" rx="4" fill="#252a45" />
+
+        <!-- Efeitos de "Acessando" - Linhas de dados -->
+        <g class="accessing-lines" opacity="0">
+          <!-- Linhas horizontais animadas -->
+          <line x1="28" y1="22" x2="72" y2="22" stroke="#6b9fff" stroke-width="1" opacity="0.6" class="data-line">
+            <animate attributeName="opacity" values="0;0.8;0" dur="1.5s" repeatCount="indefinite" />
+            <animate attributeName="x2" values="28;72;28" dur="1.5s" repeatCount="indefinite" />
+          </line>
+          <line x1="28" y1="28" x2="72" y2="28" stroke="#4ecdc4" stroke-width="1" opacity="0.6" class="data-line">
+            <animate attributeName="opacity" values="0;0.8;0" dur="1.5s" repeatCount="indefinite" begin="0.3s" />
+            <animate attributeName="x2" values="28;72;28" dur="1.5s" repeatCount="indefinite" begin="0.3s" />
+          </line>
+          <line x1="28" y1="34" x2="72" y2="34" stroke="#6b9fff" stroke-width="1" opacity="0.6" class="data-line">
+            <animate attributeName="opacity" values="0;0.8;0" dur="1.5s" repeatCount="indefinite" begin="0.6s" />
+            <animate attributeName="x2" values="28;72;28" dur="1.5s" repeatCount="indefinite" begin="0.6s" />
+          </line>
+          <line x1="28" y1="40" x2="72" y2="40" stroke="#4ecdc4" stroke-width="1" opacity="0.6" class="data-line">
+            <animate attributeName="opacity" values="0;0.8;0" dur="1.5s" repeatCount="indefinite" begin="0.9s" />
+            <animate attributeName="x2" values="28;72;28" dur="1.5s" repeatCount="indefinite" begin="0.9s" />
+          </line>
+          <line x1="28" y1="46" x2="72" y2="46" stroke="#6b9fff" stroke-width="1" opacity="0.6" class="data-line">
+            <animate attributeName="opacity" values="0;0.8;0" dur="1.5s" repeatCount="indefinite" begin="1.2s" />
+            <animate attributeName="x2" values="28;72;28" dur="1.5s" repeatCount="indefinite" begin="1.2s" />
+          </line>
+
+          <!-- Partículas de dados -->
+          <circle cx="32" cy="25" r="1.5" fill="#6b9fff" opacity="0">
+            <animate attributeName="opacity" values="0;1;0" dur="1s" repeatCount="indefinite" />
+            <animate attributeName="cy" values="25;45;25" dur="1s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="50" cy="25" r="1.5" fill="#4ecdc4" opacity="0">
+            <animate attributeName="opacity" values="0;1;0" dur="1s" repeatCount="indefinite" begin="0.5s" />
+            <animate attributeName="cy" values="25;45;25" dur="1s" repeatCount="indefinite" begin="0.5s" />
+          </circle>
+          <circle cx="68" cy="25" r="1.5" fill="#6b9fff" opacity="0">
+            <animate attributeName="opacity" values="0;1;0" dur="1s" repeatCount="indefinite" begin="0.25s" />
+            <animate attributeName="cy" values="25;45;25" dur="1s" repeatCount="indefinite" begin="0.25s" />
+          </circle>
+
+          <!-- Onda de processamento -->
+          <path d="M 28 50 Q 50 45 72 50" stroke="#6b9fff" stroke-width="2" fill="none" opacity="0"
+            stroke-linecap="round">
+            <animate attributeName="opacity" values="0;0.6;0" dur="2s" repeatCount="indefinite" />
+            <animate attributeName="d" values="M 28 50 Q 50 45 72 50;M 28 50 Q 50 40 72 50;M 28 50 Q 50 45 72 50"
+              dur="2s" repeatCount="indefinite" />
+          </path>
+        </g>
+
+        <!-- Brilho de processamento -->
+        <rect x="25" y="18" width="50" height="40" rx="12" fill="none" stroke="#6b9fff" stroke-width="2" opacity="0"
+          class="processing-glow">
+          <animate attributeName="opacity" values="0;0.4;0" dur="1.5s" repeatCount="indefinite" />
+          <animate attributeName="stroke-width" values="1.5;3;1.5" dur="1.5s" repeatCount="indefinite" />
+        </rect>
+      </svg>
+    </div>
+  </div>
 
   <script>
     window.chtlConfig = { chatbotId: "3553371319" }
