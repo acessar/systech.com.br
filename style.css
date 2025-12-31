@@ -7,11 +7,74 @@
 
 html {
   scroll-behavior: smooth;
+  color-scheme: dark;
+  accent-color: #6b9fff;
+}
+
+/* Prevenir alterações automáticas de cores pelos navegadores */
+:root {
+  color-scheme: dark;
+  accent-color: #6b9fff;
+}
+
+/* Forçar cores em elementos específicos */
+@supports (color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+  }
+}
+
+/* Prevenir forced colors mode (Windows High Contrast, etc) */
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: dark;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+  }
 }
 
 body {
   width: 100%;
   overflow-x: hidden;
+  color-scheme: dark;
+  accent-color: #6b9fff;
+  -webkit-text-fill-color: #ffffff;
+}
+
+/* Prevenir alterações automáticas em elementos interativos */
+a, button, input, select, textarea {
+  accent-color: #6b9fff;
+  color-scheme: dark;
+}
+
+a {
+  -webkit-text-fill-color: currentColor;
+  color: inherit;
+}
+
+button {
+  -webkit-text-fill-color: currentColor;
+  color: inherit;
+}
+
+/* Prevenir forced colors em modo de alto contraste */
+@media (forced-colors: active) {
+  * {
+    forced-color-adjust: none;
+  }
+}
+
+/* Garantir que elementos específicos mantenham cores */
+input[type="checkbox"],
+input[type="radio"],
+input[type="range"],
+progress {
+  accent-color: #6b9fff !important;
+  color-scheme: dark;
 }
 
 nav {
@@ -33,6 +96,7 @@ nav {
   font-size: 1.5rem;
   font-weight: 700;
   color: #ffffff;
+  -webkit-text-fill-color: #ffffff;
   text-decoration: none;
 }
 
@@ -44,6 +108,7 @@ nav {
 
 .nav-links a {
   color: #dbe6ff;
+  -webkit-text-fill-color: #dbe6ff;
   text-decoration: none;
   font-weight: 500;
   transition: color 0.3s ease;
@@ -52,6 +117,7 @@ nav {
 .nav-links a:hover,
 .nav-links a.active {
   color: #ffffff;
+  -webkit-text-fill-color: #ffffff;
 }
 
 /* Estilo específico para o link "Solicitar demonstração" no menu */
@@ -400,6 +466,8 @@ h1 {
   font-weight: 700;
   margin-bottom: 20px;
   letter-spacing: -0.02em;
+  color: #ffffff;
+  -webkit-text-fill-color: #ffffff;
 }
 
 p {
@@ -407,6 +475,7 @@ p {
   font-size: clamp(1rem, 2.2vw, 1.2rem);
   line-height: 1.6;
   color: #dbe6ff;
+  -webkit-text-fill-color: #dbe6ff;
   margin-bottom: 40px;
 }
 
@@ -427,11 +496,13 @@ p {
   border: 1px solid rgba(255, 255, 255, 0.45);
   background: rgba(200, 220, 255, 0.15);
   color: #ffffff;
+  -webkit-text-fill-color: #ffffff;
   backdrop-filter: blur(8px);
   cursor: pointer;
   transition: all 0.3s ease;
   text-decoration: none;
   display: inline-block;
+  accent-color: #6b9fff;
 }
 
 .cta:hover {
