@@ -346,68 +346,104 @@
 
   <!-- Robô Animado com Sistema de Fala -->
   <div class="robot-container" id="robotContainer">
-    <div class="robot-speech-bubble" id="robotSpeechBubble">
-      <div class="speech-bubble-content" id="speechBubbleContent">
-        <span class="speech-text">Olá</span>
+    <div class="speech-bubble-wrapper">
+      <div class="robot-speech-bubble" id="robotSpeechBubble">
+        <div class="speech-bubble-content" id="speechBubbleContent">
+          <span class="speech-text">Olá</span>
+        </div>
+        <div class="speech-bubble-tail"></div>
       </div>
-      <div class="speech-bubble-tail"></div>
       <button class="speech-close" id="speechClose" aria-label="Fechar mensagem">×</button>
     </div>
     <div class="robot-wrapper" id="robotWrapper">
       <svg viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg" class="robot-svg">
+        <defs>
+          <!-- Gradiente branco/prata para o corpo -->
+          <linearGradient id="robotGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+            <stop offset="50%" style="stop-color:#f5f5f5;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#e8e8e8;stop-opacity:1" />
+          </linearGradient>
+          <!-- Gradiente para detalhes cinza claro -->
+          <linearGradient id="silverGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#d0d0d0;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#b8b8b8;stop-opacity:1" />
+          </linearGradient>
+          <!-- Gradiente para a tela escura -->
+          <linearGradient id="screenGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#1a1a1a;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#0a0a0a;stop-opacity:1" />
+          </linearGradient>
+        </defs>
         <!-- Antena -->
-        <circle cx="50" cy="6" r="4" fill="#6b9fff" class="antenna-light">
-          <animate attributeName="opacity" values="1;0.5;1" dur="2s" repeatCount="indefinite" />
+        <circle cx="50" cy="6" r="4" fill="#c0c0c0" class="antenna-light">
+          <animate attributeName="opacity" values="1;0.6;1" dur="2s" repeatCount="indefinite" />
         </circle>
-        <rect x="48" y="8" width="4" height="12" rx="2" fill="#3a4055" />
+        <rect x="48" y="8" width="4" height="12" rx="2" fill="url(#silverGradient)" />
 
         <!-- Cabeça -->
-        <rect x="25" y="18" width="50" height="40" rx="12" fill="#1a1f3a" stroke="#6b9fff" stroke-width="1.5"
-          class="robot-head" />
+        <rect x="25" y="18" width="50" height="40" rx="12" fill="url(#robotGradient)" stroke="#d0d0d0"
+          stroke-width="1.5" class="robot-head" />
+
+        <!-- Tela do rosto -->
+        <rect x="28" y="25" width="44" height="28" rx="8" fill="url(#screenGradient)" />
 
         <!-- Olhos -->
-        <circle cx="38" cy="35" r="6" fill="#0a0e27" />
-        <circle cx="62" cy="35" r="6" fill="#0a0e27" />
+        <circle cx="38" cy="35" r="6" fill="url(#screenGradient)" />
+        <circle cx="62" cy="35" r="6" fill="url(#screenGradient)" />
         <circle cx="38" cy="34" r="4" fill="#6b9fff" class="eye-left">
-          <animate attributeName="opacity" values="1;0.3;1" dur="3s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="1;0.4;1" dur="3s" repeatCount="indefinite" />
         </circle>
         <circle cx="62" cy="34" r="4" fill="#6b9fff" class="eye-right">
-          <animate attributeName="opacity" values="1;0.3;1" dur="3s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="1;0.4;1" dur="3s" repeatCount="indefinite" />
         </circle>
-        <circle cx="40" cy="32" r="1.5" fill="#fff" opacity="0.8" />
-        <circle cx="64" cy="32" r="1.5" fill="#fff" opacity="0.8" />
+        <circle cx="40" cy="32" r="1.5" fill="#a8d5ff" opacity="0.9" />
+        <circle cx="64" cy="32" r="1.5" fill="#a8d5ff" opacity="0.9" />
 
         <!-- Boca -->
-        <path d="M40 45 Q50 50 60 45" stroke="#6b9fff" stroke-width="2" stroke-linecap="round" fill="none"
-          class="robot-mouth" />
+        <path d="M40 45 Q50 50 60 45" stroke="#6b9fff" stroke-width="2.5" stroke-linecap="round" fill="none"
+          class="robot-mouth">
+          <animate attributeName="opacity" values="0.8;1;0.8" dur="2s" repeatCount="indefinite" />
+        </path>
 
-        <!-- Braço esquerdo (para acenar) -->
-        <g class="robot-arm-left" transform-origin="22 75">
-          <rect x="18" y="65" width="8" height="20" rx="4" fill="#252a45">
+        <!-- Braço esquerdo (para acenar e levantar) -->
+        <g class="robot-arm-left" transform-origin="22 65">
+          <rect x="18" y="65" width="8" height="20" rx="4" fill="url(#silverGradient)">
             <animateTransform id="waveAnimation" attributeName="transform" type="rotate"
-              values="0 22 75; 130 22 75; 0 22 75; 130 22 75; 0 22 75" dur="0.8s" repeatCount="2" begin="indefinite" />
+              values="0 22 65; 130 22 65; 0 22 65; 130 22 65; 0 22 65" dur="0.8s" repeatCount="2" begin="indefinite" />
+            <animateTransform id="raiseLeftArmAnimation" attributeName="transform" type="rotate"
+              values="0 22 65; 130 22 65" dur="0.5s" repeatCount="1" begin="indefinite" fill="freeze" />
+            <animateTransform id="lowerLeftArmAnimation" attributeName="transform" type="rotate"
+              values="130 22 65; 0 22 65" dur="0.5s" repeatCount="1" begin="indefinite" fill="freeze" />
           </rect>
         </g>
 
         <!-- Corpo -->
-        <rect x="30" y="60" width="40" height="30" rx="8" fill="#1a1f3a" stroke="#6b9fff" stroke-width="1.5"
+        <rect x="30" y="60" width="40" height="30" rx="8" fill="url(#robotGradient)" stroke="#d0d0d0" stroke-width="1.5"
           class="robot-body" />
-        <rect x="40" y="66" width="20" height="18" rx="4" fill="#0a0e27" />
+        <rect x="40" y="66" width="20" height="18" rx="4" fill="url(#screenGradient)" />
 
         <!-- Indicadores do peito -->
         <circle cx="45" cy="72" r="2" fill="#6b9fff" class="chest-indicator">
-          <animate attributeName="opacity" values="1;0.2;1" dur="1.5s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="1;0.3;1" dur="1.5s" repeatCount="indefinite" />
         </circle>
-        <circle cx="50" cy="72" r="2" fill="#4ecdc4" class="chest-indicator">
-          <animate attributeName="opacity" values="0.2;1;0.2" dur="1.5s" repeatCount="indefinite" />
+        <circle cx="50" cy="72" r="2" fill="#5bc5ff" class="chest-indicator">
+          <animate attributeName="opacity" values="0.3;1;0.3" dur="1.5s" repeatCount="indefinite" />
         </circle>
         <circle cx="55" cy="72" r="2" fill="#6b9fff" class="chest-indicator">
-          <animate attributeName="opacity" values="1;0.2;1" dur="1.5s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="1;0.3;1" dur="1.5s" repeatCount="indefinite" />
         </circle>
-        <rect x="43" y="78" width="14" height="3" rx="1.5" fill="rgba(107,159,255,0.3)" />
+        <rect x="43" y="78" width="14" height="3" rx="1.5" fill="rgba(107,159,255,0.25)" />
 
-        <!-- Braço direito (fixo) -->
-        <rect x="74" y="65" width="8" height="20" rx="4" fill="#252a45" />
+        <!-- Braço direito (para levantar) -->
+        <g class="robot-arm-right" transform-origin="78 65">
+          <rect x="74" y="65" width="8" height="20" rx="4" fill="url(#silverGradient)">
+            <animateTransform id="raiseBothArmsAnimation" attributeName="transform" type="rotate"
+              values="0 78 65; -130 78 65" dur="0.5s" repeatCount="1" begin="indefinite" fill="freeze" />
+            <animateTransform id="lowerRightArmAnimation" attributeName="transform" type="rotate"
+              values="-130 78 65; 0 78 65" dur="0.5s" repeatCount="1" begin="indefinite" fill="freeze" />
+          </rect>
+        </g>
 
         <!-- Efeitos de "Acessando" - Linhas de dados -->
         <g class="accessing-lines" opacity="0">
@@ -466,8 +502,10 @@
     </div>
   </div>
 
- <script> window.chtlConfig = { chatbotId: "7934253836" } </script>
-<script async data-id="7934253836" id="chtl-script" type="text/javascript" src="https://chatling.ai/js/embed.js"></script>
+  <script> window.chtlConfig = { chatbotId: "7934253836" } </script>
+  <script async data-id="7934253836" id="chtl-script" type="text/javascript"
+    src="https://chatling.ai/js/embed.js"></script>
+  <script src="script.js"></script>
 </body>
 
 </html>

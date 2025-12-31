@@ -1565,7 +1565,7 @@ iframe[src*="chatling"] {
    ======================================== */
 .robot-container {
   position: fixed;
-  bottom: 24px;
+  top: 90px;
   right: 24px;
   z-index: 999;
   display: flex;
@@ -1575,37 +1575,45 @@ iframe[src*="chatling"] {
   pointer-events: none;
 }
 
+.speech-bubble-wrapper {
+  position: relative;
+  display: inline-block;
+  pointer-events: auto;
+  order: 1; /* Balão aparece primeiro (acima) */
+}
+
 .robot-wrapper {
   width: 80px;
   height: 96px;
   opacity: 0;
-  transform: translateY(100px) scale(0.8);
-  animation: robotSlideUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s forwards;
-  filter: drop-shadow(0 0 16px rgba(107, 159, 255, 0.4));
+  transform: translateY(-100px) scale(0.8);
+  animation: robotSlideDown 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s forwards;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15)) drop-shadow(0 0 20px rgba(107, 159, 255, 0.3));
   pointer-events: auto;
   cursor: pointer;
   transition: transform 0.3s ease, filter 0.3s ease;
+  order: 2; /* Robô aparece depois (abaixo) */
 }
 
 .robot-wrapper:hover {
   transform: scale(1.1) translateY(-4px);
-  filter: drop-shadow(0 0 24px rgba(107, 159, 255, 0.6));
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.2)) drop-shadow(0 0 30px rgba(107, 159, 255, 0.5));
 }
 
 .robot-wrapper:active {
   transform: scale(1.05) translateY(-2px);
 }
 
-@keyframes robotSlideUp {
+@keyframes robotSlideDown {
   0% {
     opacity: 0;
-    transform: translateY(100px) scale(0.8);
+    transform: translateY(-100px) scale(0.8);
   }
   60% {
-    transform: translateY(-8px) scale(1.05);
+    transform: translateY(8px) scale(1.05);
   }
   80% {
-    transform: translateY(4px) scale(0.98);
+    transform: translateY(-4px) scale(0.98);
   }
   100% {
     opacity: 1;
@@ -1730,12 +1738,15 @@ iframe[src*="chatling"] {
 
 .speech-close {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 24px;
-  height: 24px;
+  top: -8px;
+  right: -8px;
+  width: 28px;
+  height: 28px;
   border: none;
-  background: rgba(107, 159, 255, 0.15);
+  background: rgba(107, 159, 255, 0.2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(107, 159, 255, 0.4);
   border-radius: 50%;
   color: #dbe6ff;
   font-size: 18px;
@@ -1744,9 +1755,31 @@ iframe[src*="chatling"] {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
-  z-index: 2;
-  opacity: 0.7;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.8);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 12px rgba(107, 159, 255, 0.2);
+  pointer-events: none;
+}
+
+/* Mostrar botão quando o balão estiver ativo */
+.speech-bubble-wrapper:has(.robot-speech-bubble.active) .speech-close {
+  opacity: 0.8;
+  visibility: visible;
+  transform: scale(1);
+  pointer-events: auto;
+  transition: all 0.3s ease;
+}
+
+/* Fallback para navegadores que não suportam :has() */
+.speech-bubble-wrapper.active .speech-close {
+  opacity: 0.8;
+  visibility: visible;
+  transform: scale(1);
+  pointer-events: auto;
+  transition: all 0.3s ease;
 }
 
 .speech-close:hover {
@@ -1792,7 +1825,7 @@ iframe[src*="chatling"] {
 /* Responsividade */
 @media (max-width: 768px) {
   .robot-container {
-    bottom: 20px;
+    top: 80px;
     right: 20px;
   }
 
@@ -1814,7 +1847,7 @@ iframe[src*="chatling"] {
 
 @media (max-width: 480px) {
   .robot-container {
-    bottom: 16px;
+    top: 70px;
     right: 16px;
   }
 

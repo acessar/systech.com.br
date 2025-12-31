@@ -551,6 +551,7 @@ if (document.readyState === 'loading') {
   const speechBubble = document.getElementById('robotSpeechBubble');
   const speechContent = document.getElementById('speechBubbleContent');
   const speechClose = document.getElementById('speechClose');
+  const speechBubbleWrapper = document.querySelector('.speech-bubble-wrapper');
 
   if (!robotContainer || !robotWrapper || !speechBubble || !speechContent) {
     return;
@@ -565,17 +566,27 @@ if (document.readyState === 'loading') {
 
   // Mensagens da sequência automática
   const initialMessage = 'Olá';
-  const secondMessage = 'Venha fazer parte do alto nível do mercado';
-  const thirdMessage = 'Quem não é visto não é lembrado';
+  const secondMessage = 'Venha fazer parte do alto nível do mercado 🚀';
+  const thirdMessage = 'O futuro te espera!!';
   
   // Referência ao braço do robô para animação de aceno (será buscado quando necessário)
   let robotArmLeft = null;
+  let robotArmRight = null;
   let waveAnimation = null;
+  let raiseBothArmsAnimation = null;
+  let raiseLeftArmAnimation = null;
+  let lowerLeftArmAnimation = null;
+  let lowerRightArmAnimation = null;
   
   // Buscar elementos após DOM carregar
   function initRobotElements() {
     robotArmLeft = document.querySelector('.robot-arm-left');
+    robotArmRight = document.querySelector('.robot-arm-right');
     waveAnimation = document.getElementById('waveAnimation');
+    raiseBothArmsAnimation = document.getElementById('raiseBothArmsAnimation');
+    raiseLeftArmAnimation = document.getElementById('raiseLeftArmAnimation');
+    lowerLeftArmAnimation = document.getElementById('lowerLeftArmAnimation');
+    lowerRightArmAnimation = document.getElementById('lowerRightArmAnimation');
   }
   
   // Inicializar elementos
@@ -619,6 +630,145 @@ if (document.readyState === 'loading') {
     }
   }
 
+  // Função para ativar animação de levantar os dois braços
+  function triggerRaiseBothArmsAnimation() {
+    // Garantir que os elementos foram buscados
+    if (!raiseBothArmsAnimation || !robotArmLeft || !robotArmRight) {
+      initRobotElements();
+    }
+    
+    // Resetar braço esquerdo para posição inicial primeiro (caso tenha alguma animação anterior)
+    if (robotArmLeft) {
+      const leftRect = robotArmLeft.querySelector('rect');
+      if (leftRect) {
+        // Forçar reset para posição inicial (eixo na parte superior: y=65)
+        leftRect.setAttribute('transform', 'rotate(0 22 65)');
+      }
+    }
+    
+    // Resetar braço direito para posição inicial
+    if (robotArmRight) {
+      const rightRect = robotArmRight.querySelector('rect');
+      if (rightRect) {
+        rightRect.setAttribute('transform', 'rotate(0 78 65)');
+      }
+    }
+    
+    // Pequeno delay para garantir que o reset foi aplicado
+    setTimeout(() => {
+      // Executar ambas as animações simultaneamente
+      // Braço esquerdo
+      if (raiseLeftArmAnimation) {
+        try {
+          raiseLeftArmAnimation.beginElement();
+        } catch (e) {
+          // Fallback: aplicar transform diretamente (valor positivo para braço esquerdo, eixo na parte superior)
+          const leftRect = robotArmLeft?.querySelector('rect');
+          if (leftRect) {
+            leftRect.setAttribute('transform', 'rotate(130 22 65)');
+          }
+        }
+      } else if (robotArmLeft) {
+        const animateElement = robotArmLeft.querySelector('#raiseLeftArmAnimation');
+        if (animateElement) {
+          try {
+            animateElement.beginElement();
+          } catch (e) {
+            const leftRect = robotArmLeft.querySelector('rect');
+            if (leftRect) {
+              leftRect.setAttribute('transform', 'rotate(130 22 65)');
+            }
+          }
+        } else {
+          // Fallback direto (valor positivo para braço esquerdo, eixo na parte superior)
+          const leftRect = robotArmLeft.querySelector('rect');
+          if (leftRect) {
+            leftRect.setAttribute('transform', 'rotate(130 22 65)');
+          }
+        }
+      }
+      
+      // Braço direito (simultaneamente)
+      if (raiseBothArmsAnimation) {
+        try {
+          raiseBothArmsAnimation.beginElement();
+        } catch (e) {
+          // Fallback: aplicar transform diretamente (eixo na parte superior)
+          const rightRect = robotArmRight?.querySelector('rect');
+          if (rightRect) {
+            rightRect.setAttribute('transform', 'rotate(-130 78 65)');
+          }
+        }
+      } else if (robotArmRight) {
+        const animateElement = robotArmRight.querySelector('#raiseBothArmsAnimation');
+        if (animateElement) {
+          try {
+            animateElement.beginElement();
+          } catch (e) {
+            const rightRect = robotArmRight.querySelector('rect');
+            if (rightRect) {
+              rightRect.setAttribute('transform', 'rotate(-130 78 65)');
+            }
+          }
+        } else {
+          // Fallback direto
+          const rightRect = robotArmRight.querySelector('rect');
+          if (rightRect) {
+            rightRect.setAttribute('transform', 'rotate(-130 78 65)');
+          }
+        }
+      }
+    }, 10);
+  }
+
+  // Função para abaixar o braço esquerdo (mantém o direito levantado)
+  function triggerLowerLeftArmAnimation() {
+    if (!lowerLeftArmAnimation || !robotArmLeft) {
+      initRobotElements();
+    }
+    
+    if (lowerLeftArmAnimation) {
+      try {
+        lowerLeftArmAnimation.beginElement();
+      } catch (e) {
+        lowerLeftArmAnimation.setAttribute('begin', '0s');
+      }
+    } else if (robotArmLeft) {
+      const animateElement = robotArmLeft.querySelector('#lowerLeftArmAnimation');
+      if (animateElement) {
+        try {
+          animateElement.beginElement();
+        } catch (e) {
+          animateElement.setAttribute('begin', '0s');
+        }
+      }
+    }
+  }
+
+  // Função para abaixar o braço direito
+  function triggerLowerRightArmAnimation() {
+    if (!lowerRightArmAnimation || !robotArmRight) {
+      initRobotElements();
+    }
+    
+    if (lowerRightArmAnimation) {
+      try {
+        lowerRightArmAnimation.beginElement();
+      } catch (e) {
+        lowerRightArmAnimation.setAttribute('begin', '0s');
+      }
+    } else if (robotArmRight) {
+      const animateElement = robotArmRight.querySelector('#lowerRightArmAnimation');
+      if (animateElement) {
+        try {
+          animateElement.beginElement();
+        } catch (e) {
+          animateElement.setAttribute('begin', '0s');
+        }
+      }
+    }
+  }
+
   // Função para exibir mensagem
   function showMessage(message, duration = 5000, triggerWave = false) {
     if (!message) return;
@@ -634,6 +784,11 @@ if (document.readyState === 'loading') {
     if (triggerWave || message === initialMessage) {
       triggerWaveAnimation();
     }
+    
+    // Ativar animação de levantar os dois braços se for a segunda mensagem
+    if (message === secondMessage || message.includes('alto nível do mercado')) {
+      triggerRaiseBothArmsAnimation();
+    }
 
     // Atualizar conteúdo
     speechContent.innerHTML = `<span class="speech-text">${message}</span>`;
@@ -641,6 +796,7 @@ if (document.readyState === 'loading') {
     // Mostrar balão com animação GSAP se disponível
     if (typeof gsap !== 'undefined') {
       speechBubble.classList.add('active');
+      if (speechBubbleWrapper) speechBubbleWrapper.classList.add('active');
       
       gsap.fromTo(speechBubble,
         {
@@ -674,6 +830,7 @@ if (document.readyState === 'loading') {
     } else {
       // Fallback sem GSAP
       speechBubble.classList.add('active');
+      if (speechBubbleWrapper) speechBubbleWrapper.classList.add('active');
     }
 
     isSpeechVisible = true;
@@ -699,6 +856,7 @@ if (document.readyState === 'loading') {
         ease: 'power2.in',
         onComplete: () => {
           speechBubble.classList.remove('active');
+          if (speechBubbleWrapper) speechBubbleWrapper.classList.remove('active');
           if (!skipSequence && isSequenceRunning) {
             // Continuar sequência após esconder
             continueSequence();
@@ -707,6 +865,7 @@ if (document.readyState === 'loading') {
       });
     } else {
       speechBubble.classList.remove('active');
+      if (speechBubbleWrapper) speechBubbleWrapper.classList.remove('active');
       if (!skipSequence && isSequenceRunning) {
         setTimeout(() => continueSequence(), 300);
       }
@@ -736,23 +895,35 @@ if (document.readyState === 'loading') {
       // Passo 1: Olá (curto - 2.5 segundos) com animação de aceno
       showMessage(initialMessage, 0, true); // triggerWave = true
       sequenceTimeout = setTimeout(() => {
-        hideMessage();
+        hideMessage(true); // skipSequence para não chamar continueSequence dentro do hideMessage
         sequenceStep = 1;
+        continueSequence(); // Continuar para próxima mensagem
       }, 2500);
     } else if (sequenceStep === 1) {
-      // Passo 2: Segunda mensagem (menos tempo - 4 segundos)
+      // Passo 2: Segunda mensagem (menos tempo - 4 segundos) - dois braços levantados
       showMessage(secondMessage, 0);
       sequenceTimeout = setTimeout(() => {
-        hideMessage();
+        hideMessage(true); // skipSequence para não chamar continueSequence dentro do hideMessage
+        // Abaixar braço esquerdo, mantendo o direito levantado
+        triggerLowerLeftArmAnimation();
         sequenceStep = 2;
+        // Continuar para próxima mensagem após um pequeno delay
+        setTimeout(() => {
+          continueSequence();
+        }, 500);
       }, 4000);
     } else if (sequenceStep === 2) {
-      // Passo 3: Terceira mensagem (5 segundos) - fim da sequência
+      // Passo 3: Terceira mensagem (5 segundos) - apenas braço direito levantado
       showMessage(thirdMessage, 0);
       sequenceTimeout = setTimeout(() => {
-        hideMessage();
-        // Parar sequência após a terceira mensagem
-        stopSequence();
+        hideMessage(true); // skipSequence para não chamar continueSequence dentro do hideMessage
+        // Abaixar braço direito (voltar ao normal)
+        triggerLowerRightArmAnimation();
+        // Aguardar 6.5 segundos e reiniciar a sequência do início
+        sequenceTimeout = setTimeout(() => {
+          sequenceStep = 0;
+          continueSequence();
+        }, 6500);
       }, 5000);
     }
   }
