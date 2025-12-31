@@ -986,22 +986,27 @@ if (document.readyState === 'loading') {
     });
   }
 
-  // Clicar no robô para avançar para a próxima mensagem
+  // Clicar no robô para abrir o chatbot
   if (robotWrapper) {
     robotWrapper.addEventListener('click', (e) => {
       e.stopPropagation();
       
-      if (isSpeechVisible) {
-        // Se está mostrando mensagem, avançar para a próxima
-        nextMessage();
-      } else {
-        // Se não está mostrando, iniciar sequência
-        if (!isSequenceRunning) {
-          startSequence();
-        } else {
-          nextMessage();
-        }
+      // Abrir o chatbot
+      if (openChatbot()) {
+        return;
       }
+      
+      // Se não conseguir abrir, aguardar o Chatling carregar
+      waitForChatling(() => {
+        if (!openChatbot()) {
+          console.warn('Não foi possível abrir o chatbot. Tentando novamente...');
+          setTimeout(() => {
+            if (!openChatbot()) {
+              console.error('Chatbot não está disponível no momento.');
+            }
+          }, 500);
+        }
+      });
     });
   }
 
