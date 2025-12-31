@@ -93,6 +93,47 @@ const quickNavItems = document.querySelectorAll('.quick-nav-item');
 // Timeline para animação do hambúrguer (declarada globalmente)
 let hamburgerTL = null;
 
+// Função para esconder robô quando menu estiver aberto
+function hideRobotForMenu() {
+  const robotContainer = document.getElementById('robotContainer');
+  if (robotContainer) {
+    if (typeof gsap !== 'undefined') {
+      gsap.to(robotContainer, {
+        opacity: 0,
+        pointerEvents: 'none',
+        duration: 0.3,
+        ease: 'power2.in'
+      });
+    } else {
+      robotContainer.style.opacity = '0';
+      robotContainer.style.pointerEvents = 'none';
+      robotContainer.style.transition = 'opacity 0.3s ease';
+    }
+  }
+}
+
+// Função para mostrar robô quando menu fechar
+function showRobotForMenu() {
+  const robotContainer = document.getElementById('robotContainer');
+  if (robotContainer) {
+    if (typeof gsap !== 'undefined') {
+      gsap.to(robotContainer, {
+        opacity: 1,
+        pointerEvents: 'auto',
+        duration: 0.3,
+        ease: 'power2.out',
+        delay: 0.2
+      });
+    } else {
+      setTimeout(() => {
+        robotContainer.style.opacity = '1';
+        robotContainer.style.pointerEvents = 'auto';
+        robotContainer.style.transition = 'opacity 0.3s ease';
+      }, 200);
+    }
+  }
+}
+
 // Inicializar GSAP quando disponível
 if (typeof gsap !== 'undefined') {
   hamburgerTL = gsap.timeline({ paused: true });
@@ -124,6 +165,8 @@ function openDropdown() {
       dropdown.classList.add('active');
       hamburgerMenu.classList.add('active');
       dropdownOpen = true;
+      // Esconder robô e balão de fala
+      hideRobotForMenu();
     }
     return;
   }
@@ -166,6 +209,9 @@ function openDropdown() {
     hamburgerMenu.classList.add('active');
     if (hamburgerTL) hamburgerTL.play();
     dropdownOpen = true;
+    
+    // Esconder robô e balão de fala
+    hideRobotForMenu();
   }
 }
 
@@ -176,6 +222,8 @@ function closeDropdown() {
       dropdown.classList.remove('active');
       hamburgerMenu.classList.remove('active');
       dropdownOpen = false;
+      // Mostrar robô e balão de fala novamente
+      showRobotForMenu();
     }
     return;
   }
@@ -203,6 +251,11 @@ function closeDropdown() {
     hamburgerMenu.classList.remove('active');
     if (hamburgerTL) hamburgerTL.reverse();
     dropdownOpen = false;
+    
+    // Mostrar robô e balão de fala novamente após menu fechar
+    setTimeout(() => {
+      showRobotForMenu();
+    }, 300);
   }
 }
 
