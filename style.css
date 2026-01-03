@@ -7,65 +7,67 @@
 
 html {
   scroll-behavior: smooth;
-  color-scheme: dark;
-  accent-color: #6b9fff;
+  color-scheme: dark !important;
+  accent-color: #6b9fff !important;
 }
 
-/* Prevenir alterações automáticas de cores pelos navegadores */
 :root {
-  color-scheme: dark;
-  accent-color: #6b9fff;
+  color-scheme: dark !important;
+  accent-color: #6b9fff !important;
 }
 
-/* Forçar cores em elementos específicos */
-@supports (color-scheme: dark) {
-  :root {
-    color-scheme: dark;
-  }
-}
-
-/* Prevenir forced colors mode (Windows High Contrast, etc) */
+/* Forçar dark mode sempre, independente das preferências do sistema */
 @media (prefers-color-scheme: light) {
-  :root {
-    color-scheme: dark;
+  html, :root {
+    color-scheme: dark !important;
   }
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    color-scheme: dark;
+  html, :root {
+    color-scheme: dark !important;
   }
 }
 
 body {
   width: 100%;
   overflow-x: hidden;
-  color-scheme: dark;
-  accent-color: #6b9fff;
-  -webkit-text-fill-color: #ffffff;
+  color-scheme: dark !important;
+  accent-color: #6b9fff !important;
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+/* Safari/iOS específico - Prevenir mudanças automáticas */
+@supports (-webkit-touch-callout: none) {
+  html {
+    -webkit-text-size-adjust: 100%;
+    color-scheme: dark !important;
+  }
+  
+  body {
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    color-scheme: dark !important;
+    background-color: #000000 !important;
+    color: #ffffff !important;
+  }
+  
+  /* Forçar cores em elementos específicos do Safari */
+  * {
+    -webkit-tap-highlight-color: rgba(107, 159, 255, 0.3);
+  }
+  
+  a, button {
+    -webkit-tap-highlight-color: rgba(107, 159, 255, 0.3);
+  }
 }
 
 /* Prevenir alterações automáticas em elementos interativos */
 a, button, input, select, textarea {
-  accent-color: #6b9fff;
-  color-scheme: dark;
-}
-
-a {
-  -webkit-text-fill-color: currentColor;
-  color: inherit;
-}
-
-button {
-  -webkit-text-fill-color: currentColor;
-  color: inherit;
-}
-
-/* Prevenir forced colors em modo de alto contraste */
-@media (forced-colors: active) {
-  * {
-    forced-color-adjust: none;
-  }
+  accent-color: #6b9fff !important;
+  color-scheme: dark !important;
+  -webkit-tap-highlight-color: rgba(107, 159, 255, 0.3);
 }
 
 /* Garantir que elementos específicos mantenham cores */
@@ -74,7 +76,7 @@ input[type="radio"],
 input[type="range"],
 progress {
   accent-color: #6b9fff !important;
-  color-scheme: dark;
+  color-scheme: dark !important;
 }
 
 nav {
@@ -95,8 +97,7 @@ nav {
 .logo {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #ffffff;
-  -webkit-text-fill-color: #ffffff;
+  color: #ffffff !important;
   text-decoration: none;
 }
 
@@ -107,8 +108,7 @@ nav {
 }
 
 .nav-links a {
-  color: #dbe6ff;
-  -webkit-text-fill-color: #dbe6ff;
+  color: #dbe6ff !important;
   text-decoration: none;
   font-weight: 500;
   transition: color 0.3s ease;
@@ -116,8 +116,7 @@ nav {
 
 .nav-links a:hover,
 .nav-links a.active {
-  color: #ffffff;
-  -webkit-text-fill-color: #ffffff;
+  color: #ffffff !important;
 }
 
 /* Estilo específico para o link "Solicitar demonstração" no menu */
@@ -456,7 +455,7 @@ video {
   justify-content: center;
   text-align: center;
   padding: 0 24px;
-  color: #ffffff;
+  color: #ffffff !important;
   position: relative;
   z-index: 1;
 }
@@ -466,16 +465,14 @@ h1 {
   font-weight: 700;
   margin-bottom: 20px;
   letter-spacing: -0.02em;
-  color: #ffffff;
-  -webkit-text-fill-color: #ffffff;
+  color: #ffffff !important;
 }
 
 p {
   max-width: 820px;
   font-size: clamp(1rem, 2.2vw, 1.2rem);
   line-height: 1.6;
-  color: #dbe6ff;
-  -webkit-text-fill-color: #dbe6ff;
+  color: #dbe6ff !important;
   margin-bottom: 40px;
 }
 
@@ -493,16 +490,16 @@ p {
   font-size: 1rem;
   font-weight: 600;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  background: rgba(200, 220, 255, 0.15);
-  color: #ffffff;
-  -webkit-text-fill-color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.45) !important;
+  background: rgba(200, 220, 255, 0.15) !important;
+  color: #ffffff !important;
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   cursor: pointer;
   transition: all 0.3s ease;
   text-decoration: none;
   display: inline-block;
-  accent-color: #6b9fff;
+  accent-color: #6b9fff !important;
 }
 
 .cta:hover {
@@ -532,8 +529,8 @@ p {
 }
 
 .about-product {
-  background: #000;
-  color: #fff;
+  background: #000000 !important;
+  color: #ffffff !important;
   padding: 100px 24px;
   position: relative;
   z-index: 1;
@@ -869,8 +866,8 @@ p {
    ======================================== */
 .process-section {
   position: relative;
-  background: #000;
-  color: #fff;
+  background: #000000 !important;
+  color: #ffffff !important;
   padding: 80px 24px 70px;
   overflow: hidden;
 }
@@ -1441,8 +1438,8 @@ p {
    FAQs
    ======================================== */
 .faqs-section {
-  background: #000;
-  color: #fff;
+  background: #000000 !important;
+  color: #ffffff !important;
   padding: 100px 24px;
   position: relative;
   z-index: 1;

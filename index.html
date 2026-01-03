@@ -3,9 +3,12 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="color-scheme" content="dark" />
-  <meta name="theme-color" content="#6b9fff" />
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: light)" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>Sys — IA Autônoma</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -53,10 +56,10 @@
   <div class="overlay"></div>
 
   <main class="container">
-    <h1>O foguete automático de crescimento</h1>
+    <h1>O foguete automático IA de receita</h1>
     <p>
-      A infraestrutura de crescimento da IA que transforma dados em pesquisa de qualidade
-      e satisfação dos clientes. Visando a performance de cada cliente através dos números.
+      A infraestrutura de crescimento da IA que transforma dados em pesquisa de qualidade. 
+      Visando a performance de cada cliente através de estatísticas.
     </p>
     <div class="cta-container">
       <a href="#solicitar" class="cta">Solicitar demonstração</a>
@@ -507,6 +510,43 @@
   <script> window.chtlConfig = { chatbotId: "7934253836" } </script>
   <script async data-id="7934253836" id="chtl-script" type="text/javascript"
     src="https://chatling.ai/js/embed.js"></script>
+  <script>
+      // Forçar color-scheme dark e prevenir alterações automáticas de cores
+      (function () {
+        const html = document.documentElement;
+        const body = document.body;
+
+        // Forçar color-scheme dark
+        html.style.colorScheme = 'dark';
+        html.setAttribute('data-color-scheme', 'dark');
+
+        // Prevenir mudanças automáticas
+        if (body) {
+          body.style.colorScheme = 'dark';
+          body.style.backgroundColor = '#000000';
+          body.style.color = '#ffffff';
+        }
+
+        // Observar mudanças e forçar novamente se necessário
+        const observer = new MutationObserver(function (mutations) {
+          mutations.forEach(function (mutation) {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+              if (html.style.colorScheme !== 'dark') {
+                html.style.colorScheme = 'dark';
+              }
+              if (body && body.style.colorScheme !== 'dark') {
+                body.style.colorScheme = 'dark';
+              }
+            }
+          });
+        });
+
+        observer.observe(html, { attributes: true, attributeFilter: ['style'] });
+        if (body) {
+          observer.observe(body, { attributes: true, attributeFilter: ['style'] });
+        }
+      })();
+  </script>
   <script src="script.js"></script>
 </body>
 
