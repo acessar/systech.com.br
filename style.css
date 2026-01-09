@@ -545,8 +545,133 @@ p {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 60px;
-  align-items: center;
+  align-items: start;
   margin-bottom: 100px;
+}
+
+/* Estados iniciais para animações de scroll - apenas para fallback */
+.scroll-animate:not(.scroll-animated) {
+  opacity: 0;
+}
+
+/* Garantir que elementos animados pelo GSAP comecem invisíveis */
+.card,
+.product-hero .product-text,
+.product-hero .product-image,
+.hero-row .product-text,
+.hero-row .product-image,
+.insights-section h3,
+.insights-section p,
+.data-section-title,
+.data-metrics,
+.data-metrics-list li,
+.process-title,
+.process-step,
+.faqs-title,
+.faq-item {
+  will-change: opacity, transform;
+}
+
+/* Fallback CSS para animações se JavaScript falhar */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.scroll-animated {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+/* Layout alternado (zigzag) para a seção de dados */
+.product-hero-alt {
+  display: flex;
+  flex-direction: column;
+  gap: 100px;
+  margin-bottom: 100px;
+}
+
+.hero-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+/* Reverter a ordem visual da segunda linha usando flexbox order */
+.hero-row-reverse {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.hero-row-reverse .product-text {
+  order: 2;
+}
+
+.hero-row-reverse .product-image {
+  order: 1;
+}
+
+/* Garantir que as imagens nas linhas alternadas tenham o mesmo estilo */
+.product-hero-alt .product-image {
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.product-hero-alt .product-image:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(107, 159, 255, 0.2);
+}
+
+.product-hero-alt .product-image img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 16px;
+  display: block;
 }
 
 .product-text h2 {
@@ -569,7 +694,7 @@ p {
   font-size: clamp(1rem, 2vw, 1.1rem);
   line-height: 1.7;
   color: #bbb;
-  margin-bottom: 32px;
+  margin-bottom: 40px;
 }
 
 .product-image {
@@ -581,6 +706,34 @@ p {
 .product-image img {
   width: 100%;
   height: auto;
+  display: block;
+}
+
+/* Container para múltiplas imagens na coluna direita */
+.product-images-container {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  align-items: stretch;
+  height: fit-content;
+}
+
+.product-images-container .product-image {
+  flex: 1;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.product-images-container .product-image:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(107, 159, 255, 0.2);
+}
+
+.product-images-container .product-image img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 16px;
   display: block;
 }
 
@@ -817,7 +970,7 @@ p {
   font-size: clamp(1.1rem, 2vw, 1.3rem);
   font-weight: 600;
   color: #fff;
-  margin-top: 40px;
+  margin-top: 0;
   margin-bottom: 24px;
   letter-spacing: -0.01em;
 }
@@ -835,7 +988,7 @@ p {
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   padding: 32px;
-  margin-bottom: 40px;
+  margin-bottom: 48px;
 }
 
 .data-metrics-list {
@@ -935,7 +1088,7 @@ p {
   border-radius: 12px;
   padding: 12px 16px;
   transition: all 0.3s ease;
-  animation: fadeInUp 0.5s ease backwards, energyPulse 3s ease-in-out infinite;
+  animation: fadeInUpSteps 0.5s ease backwards, energyPulse 3s ease-in-out infinite;
   z-index: 5;
   box-shadow: 0 0 20px rgba(107, 159, 255, 0.1);
   overflow: hidden;
@@ -1065,7 +1218,7 @@ p {
   animation-delay: 4.5s;
 }
 
-@keyframes fadeInUp {
+@keyframes fadeInUpSteps {
   from {
     opacity: 0;
     transform: translateY(15px);
@@ -1125,16 +1278,16 @@ p {
 
 /* Delays diferentes para efeito de energia em onda - SINCRONIZADO COM LINHA 6s */
 .process-step:nth-child(2) {
-  animation: fadeInUp 0.5s ease 0.1s backwards, energyPulse 6s ease-in-out 0s infinite;
+  animation: fadeInUpSteps 0.5s ease 0.1s backwards, energyPulse 6s ease-in-out 0s infinite;
 }
 .process-step:nth-child(3) {
-  animation: fadeInUp 0.5s ease 0.2s backwards, energyPulse 6s ease-in-out 1.5s infinite;
+  animation: fadeInUpSteps 0.5s ease 0.2s backwards, energyPulse 6s ease-in-out 1.5s infinite;
 }
 .process-step:nth-child(4) {
-  animation: fadeInUp 0.5s ease 0.3s backwards, energyPulse 6s ease-in-out 3s infinite;
+  animation: fadeInUpSteps 0.5s ease 0.3s backwards, energyPulse 6s ease-in-out 3s infinite;
 }
 .process-step:nth-child(5) {
-  animation: fadeInUp 0.5s ease 0.4s backwards, energyPulse 6s ease-in-out 4.5s infinite;
+  animation: fadeInUpSteps 0.5s ease 0.4s backwards, energyPulse 6s ease-in-out 4.5s infinite;
 }
 
 /* Posições formando S - ESPAÇAMENTO IGUAL */
@@ -1337,7 +1490,26 @@ p {
     gap: 40px; 
     margin-bottom: 60px; 
   }
-  .product-hero .product-image { order: 2; }
+  
+  .product-hero-alt {
+    gap: 50px;
+    margin-bottom: 60px;
+  }
+  
+  .hero-row,
+  .hero-row-reverse {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  
+  .hero-row-reverse .product-text,
+  .hero-row-reverse .product-image {
+    order: 0;
+  }
+  
+  .product-images-container {
+    gap: 20px;
+  }
   .cards-grid { 
     grid-template-columns: 1fr; 
     gap: 24px; 

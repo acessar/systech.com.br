@@ -1132,3 +1132,446 @@ if (document.readyState === 'loading') {
   console.log('🤖 Robô animado inicializado! Use robotSay("mensagem") para fazer o robô falar.');
 })();
 
+/* ========================================
+   ANIMAÇÕES DE SCROLL - GSAP SCROLLTRIGGER
+   ======================================== */
+(function() {
+  'use strict';
+
+  // Registrar ScrollTrigger se GSAP estiver disponível
+  if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+    gsap.registerPlugin(ScrollTrigger);
+  } else {
+    // Fallback: usar Intersection Observer se GSAP não estiver disponível
+    initScrollAnimationsFallback();
+    return;
+  }
+
+  // Configuração global do ScrollTrigger
+  ScrollTrigger.config({
+    autoRefreshEvents: "visibilitychange,DOMContentLoaded,load"
+  });
+
+  // Animações para seções principais
+  function initScrollAnimations() {
+    // Animação para cards de insights
+    gsap.utils.toArray('.card').forEach((card, index) => {
+      gsap.fromTo(card, 
+        {
+          opacity: 0,
+          y: 80,
+          scale: 0.9
+        },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.8,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: card,
+            start: 'top 85%',
+            end: 'bottom 20%',
+            toggleActions: 'play none none none',
+            once: true
+          },
+          delay: index * 0.15
+        }
+      );
+    });
+
+    // Animação para título da seção de insights
+    gsap.fromTo('.insights-section h3',
+      {
+        opacity: 0,
+        y: 50
+      },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: '.insights-section',
+          start: 'top 80%',
+          toggleActions: 'play none none none',
+          once: true
+        }
+      }
+    );
+
+    // Animação para parágrafo da seção de insights
+    gsap.fromTo('.insights-section p',
+      {
+        opacity: 0,
+        y: 40
+      },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: 'power2.out',
+        delay: 0.2,
+        scrollTrigger: {
+          trigger: '.insights-section',
+          start: 'top 80%',
+          toggleActions: 'play none none none',
+          once: true
+        }
+      }
+    );
+
+    // Animação para product-hero (primeira seção de produto)
+    gsap.utils.toArray('.product-hero:not(.product-hero-alt)').forEach(hero => {
+      const text = hero.querySelector('.product-text');
+      const image = hero.querySelector('.product-image');
+
+      if (text) {
+        gsap.fromTo(text,
+          {
+            opacity: 0,
+            x: -80
+          },
+          {
+            opacity: 1,
+            x: 0,
+            duration: 1,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: hero,
+              start: 'top 75%',
+              toggleActions: 'play none none none',
+              once: true
+            }
+          }
+        );
+      }
+
+      if (image) {
+        gsap.fromTo(image,
+          {
+            opacity: 0,
+            x: 80,
+            scale: 0.95
+          },
+          {
+            opacity: 1,
+            x: 0,
+            scale: 1,
+            duration: 1,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: hero,
+              start: 'top 75%',
+              toggleActions: 'play none none none',
+              once: true
+            }
+          }
+        );
+      }
+    });
+
+    // Animação para layout alternado (product-hero-alt)
+    gsap.utils.toArray('.hero-row').forEach((row, index) => {
+      const text = row.querySelector('.product-text');
+      const image = row.querySelector('.product-image');
+      const isReverse = row.classList.contains('hero-row-reverse');
+
+      if (text) {
+        gsap.fromTo(text,
+          {
+            opacity: 0,
+            x: isReverse ? 80 : -80
+          },
+          {
+            opacity: 1,
+            x: 0,
+            duration: 1,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: row,
+              start: 'top 80%',
+              toggleActions: 'play none none none',
+              once: true
+            },
+            delay: index * 0.1
+          }
+        );
+      }
+
+      if (image) {
+        gsap.fromTo(image,
+          {
+            opacity: 0,
+            x: isReverse ? -80 : 80,
+            scale: 0.9
+          },
+          {
+            opacity: 1,
+            x: 0,
+            scale: 1,
+            duration: 1,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: row,
+              start: 'top 80%',
+              toggleActions: 'play none none none',
+              once: true
+            },
+            delay: index * 0.1 + 0.2
+          }
+        );
+      }
+    });
+
+    // Animação para lista de métricas
+    gsap.utils.toArray('.data-metrics-list li').forEach((li, index) => {
+      gsap.fromTo(li,
+        {
+          opacity: 0,
+          x: -30
+        },
+        {
+          opacity: 1,
+          x: 0,
+          duration: 0.5,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: li.closest('.data-metrics'),
+            start: 'top 85%',
+            toggleActions: 'play none none none',
+            once: true
+          },
+          delay: index * 0.1
+        }
+      );
+    });
+
+    // Animação para título da seção de dados
+    gsap.fromTo('.data-section-title',
+      {
+        opacity: 0,
+        y: 30
+      },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.7,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: '.data-section-title',
+          start: 'top 85%',
+          toggleActions: 'play none none none',
+          once: true
+        }
+      }
+    );
+
+    // Animação para botões CTA
+    gsap.utils.toArray('.cta').forEach(cta => {
+      gsap.fromTo(cta,
+        {
+          opacity: 0,
+          y: 30,
+          scale: 0.95
+        },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.6,
+          ease: 'back.out(1.7)',
+          scrollTrigger: {
+            trigger: cta,
+            start: 'top 90%',
+            toggleActions: 'play none none none',
+            once: true
+          }
+        }
+      );
+    });
+
+    // Animação para seção de processos
+    gsap.fromTo('.process-title',
+      {
+        opacity: 0,
+        y: 50
+      },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: '.process-section',
+          start: 'top 80%',
+          toggleActions: 'play none none none',
+          once: true
+        }
+      }
+    );
+
+    gsap.utils.toArray('.process-step').forEach((step, index) => {
+      gsap.fromTo(step,
+        {
+          opacity: 0,
+          y: 60,
+          scale: 0.8
+        },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.8,
+          ease: 'back.out(1.4)',
+          scrollTrigger: {
+            trigger: step,
+            start: 'top 85%',
+            toggleActions: 'play none none none',
+            once: true
+          },
+          delay: index * 0.15
+        }
+      );
+    });
+
+    // Animação para seção de FAQs
+    gsap.fromTo('.faqs-title',
+      {
+        opacity: 0,
+        y: 50
+      },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: '.faqs-section',
+          start: 'top 80%',
+          toggleActions: 'play none none none',
+          once: true
+        }
+      }
+    );
+
+    gsap.utils.toArray('.faq-item').forEach((item, index) => {
+      gsap.fromTo(item,
+        {
+          opacity: 0,
+          x: -40
+        },
+        {
+          opacity: 1,
+          x: 0,
+          duration: 0.6,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: item,
+            start: 'top 90%',
+            toggleActions: 'play none none none',
+            once: true
+          },
+          delay: index * 0.1
+        }
+      );
+    });
+
+    // Animação para descrições
+    gsap.utils.toArray('.description').forEach((desc, index) => {
+      gsap.fromTo(desc,
+        {
+          opacity: 0,
+          y: 40
+        },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: desc,
+            start: 'top 85%',
+            toggleActions: 'play none none none',
+            once: true
+          },
+          delay: index * 0.15
+        }
+      );
+    });
+  }
+
+  // Fallback usando Intersection Observer se GSAP não estiver disponível
+  function initScrollAnimationsFallback() {
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -100px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('scroll-animated');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    // Elementos para animar
+    const elementsToAnimate = document.querySelectorAll(`
+      .card,
+      .product-hero,
+      .hero-row,
+      .product-text,
+      .product-image,
+      .insights-section h3,
+      .insights-section p,
+      .data-section-title,
+      .data-metrics,
+      .data-metrics-list li,
+      .cta,
+      .process-title,
+      .process-step,
+      .faqs-title,
+      .faq-item,
+      .description
+    `);
+
+    elementsToAnimate.forEach(el => {
+      el.classList.add('scroll-animate');
+      observer.observe(el);
+    });
+  }
+
+  // Aguardar DOM e GSAP carregarem
+  function initOnReady() {
+    if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+      initScrollAnimations();
+    } else {
+      // Aguardar um pouco mais se GSAP ainda não carregou
+      setTimeout(() => {
+        if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+          initScrollAnimations();
+        } else {
+          initScrollAnimationsFallback();
+        }
+      }, 500);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(initOnReady, 100);
+    });
+  } else {
+    setTimeout(initOnReady, 100);
+  }
+
+  // Atualizar ScrollTrigger ao redimensionar
+  window.addEventListener('resize', () => {
+    if (typeof ScrollTrigger !== 'undefined') {
+      ScrollTrigger.refresh();
+    }
+  });
+})();
+

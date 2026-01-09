@@ -12,6 +12,7 @@
   <title>Sys — IA Autônoma</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 </head>
 
 <body>
@@ -58,7 +59,7 @@
   <main class="container">
     <h1>O foguete automático IA de receita</h1>
     <p>
-      A infraestrutura de crescimento da IA que transforma dados em pesquisa de qualidade. 
+      A infraestrutura de crescimento da IA que transforma dados em pesquisa de qualidade.
       Visando a performance de cada cliente através de estatísticas.
     </p>
     <div class="cta-container">
@@ -73,14 +74,8 @@
     <div class="about-content">
       <div class="product-hero">
         <div class="product-text">
-          <h2>IA para gerenciamento inteligente de agendamentos</h2>
-          <h3>O foguete automatico do seu crescimento</h3>
-          <p class="description">
-            A SYS é o agente de IA que converte clientes no momento em que eles entram na sua porta digital.
-            Ela automatiza e otimiza o agendamento, entendendo o contexto, a intenção e as necessidades de cada
-            cliente.
-            Ao unir dados, comportamento e performance, a SYS transforma agendamentos em crescimento real de receita.
-          </p>
+          <h2>IA PARA RETENÇÃO E LEALDADE DE ANTIGOS E NOVOS CLIENTES</h2>
+          <h3>O foguete automático de crescimento de receita</h3>
           <p class="description">
             O maior desafio de qualquer empresa é escalar com previsibilidade.
             A sys resolve esse desafio ao se tornar o foguete do seu negócio — da ativação inicial de novos usuários até
@@ -106,54 +101,57 @@
         <div class="cards-grid">
           <div class="card">
             <div class="card-bg" style="background-image: url('dados.png');"></div>
-            <h4>Aumentar a retenção de clientes</h4>
+            <h4>Aumente a retenção de clientes</h4>
           </div>
           <div class="card">
             <div class="card-bg" style="background-image: url('tempo.png');"></div>
-            <h4>Reduzir o tempo entre atendimentos</h4>
+            <h4>Reduza o tempo entre um atendimento e outro</h4>
           </div>
           <div class="card">
             <div class="card-bg" style="background-image: url('IA3.png');"></div>
-            <h4>Escalar resultados com IA</h4>
+            <h4>Escale resultados com IA</h4>
           </div>
         </div>
       </div>
 
-      <div class="product-hero" style="margin-top: 100px; margin-bottom: 0;">
-        <div class="product-text">
-          <h3>Onde dados se tornam resultados</h3>
-          <p class="description">
-            Integramos a performance de cada cliente em uma visão orientada por dados.
-            A partir dos números, demonstramos o quanto o serviço evoluiu, o ticket médio alcançado,
-            a frequência de uso e outros indicadores essenciais. Com esses insights, os dados deixam
-            de ser apenas métricas e passam a impulsionar decisões estratégicas e o crescimento
-            consistente da sua empresa.
-          </p>
+      <div class="product-hero-alt" style="margin-top: 100px;">
+        <!-- Primeira linha: Texto esquerdo, Imagem direita -->
+        <div class="hero-row">
+          <div class="product-text">
+            <h3>Onde dados se tornam resultados</h3>
+            <p class="description">
+              Integramos a performance de cada cliente em uma visão orientada por dados.
+              A partir dos números, demonstramos o quanto o serviço evoluiu, o ticket médio alcançado,
+              a frequência de uso e outros indicadores essenciais. Com esses insights, os dados deixam
+              de ser apenas métricas e passam a impulsionar decisões estratégicas e o crescimento
+              consistente da sua empresa.
+            </p>
+          </div>
           <div class="product-image">
             <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80" alt="Dados e Analytics" />
           </div>
-          <p class="data-intro">
-            A SYS organiza informações essenciais sobre o comportamento dos clientes e o uso dos serviços,
-            permitindo acompanhar padrões, identificar variações ao longo do tempo e ajustar sua operação
-            com mais segurança.
-          </p>
-
-          <h4 class="data-section-title">O que você acompanha no painel:</h4>
-
-          <div class="data-metrics">
-            <ul class="data-metrics-list">
-              <li>Quantidade de agendamentos por período</li>
-              <li>Comparação entre semanas e meses</li>
-              <li>Serviços mais procurados</li>
-              <li>Horários com maior demanda</li>
-              <li>Agendamentos concluídos vs abandonados</li>
-              <li>Impacto das mensagens automáticas no retorno dos clientes</li>
-            </ul>
-          </div>
-          <a href="#solicitar" class="cta">Solicitar demonstração</a>
         </div>
-        <div class="product-image">
-          <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80" alt="Dados e Analytics" />
+
+        <!-- Segunda linha: Texto direito, Imagem esquerda -->
+        <div class="hero-row hero-row-reverse">
+          <div class="product-text">
+            <h4 class="data-section-title">O que você acompanha no painel:</h4>
+            <div class="data-metrics">
+              <ul class="data-metrics-list">
+                <li>Quantidade de agendamentos por período</li>
+                <li>Comparação entre semanas e meses</li>
+                <li>Serviços mais procurados</li>
+                <li>Horários com maior demanda</li>
+                <li>Agendamentos concluídos vs abandonados</li>
+                <li>Impacto das mensagens automáticas no retorno dos clientes</li>
+              </ul>
+            </div>
+            <a href="#solicitar" class="cta">Solicitar demonstração</a>
+          </div>
+          <div class="product-image">
+            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80"
+              alt="Dados e Analytics" />
+          </div>
         </div>
       </div>
     </div>
